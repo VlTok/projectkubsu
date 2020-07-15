@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class StartController {
 
     @GetMapping("/")
+    public String begin(Model model){
+        return "begin";
+    }
+
+    @GetMapping("/login")
     public String login(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
         model.addAttribute("name", name);
         return "login";

@@ -5,6 +5,17 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-<p th:text="'Hello, ' + ${name} + '!'" />
+    <div>
+        <form method="post">
+            <input type="text" name="name" placeholder="Name" />
+            <input type="text" name="email" placeholder="Email">
+            <button type="submit">Добавить</button>
+        </form>
+    </div>
+    <div th:each="el : ${users}">
+        <b th:text="${el.id}"/>
+        <span th:text="${el.name}"/>
+        <i th:text="${el.email}"/>
+    </div>
 </body>
 </html>
