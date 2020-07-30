@@ -1,21 +1,62 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Main</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<head th:insert="blocks/head :: head">
 </head>
 <body>
-    <div>
-        <form method="post">
-            <input type="text" name="name" placeholder="Name" />
-            <input type="text" name="email" placeholder="Email">
-            <button type="submit">Добавить</button>
-        </form>
-    </div>
-    <div th:each="el : ${users}">
-        <b th:text="${el.id}"/>
-        <span th:text="${el.name}"/>
-        <i th:text="${el.email}"/>
-    </div>
+    <header th:insert="blocks/header :: header"></header>
+        <div class="container" th:each="el : ${page}">
+            <table class="table table-sm table-hover col-lg-10 col-md-10 col-sm-12">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col"><i th:text="${el.day_of_week}"/></th>
+                    <th scope="col"> <i th:text="${el.team}"/>/<i th:text="${el.subgroup}"/> </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td><b th:text="${el.couple1}"/></td>
+                    <td>8:00-9:30</td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td><b th:text="${el.couple2}"/></td>
+                    <td>9:40-11:10</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td><b th:text="${el.couple3}"/></td>
+                    <td>11:30-13:00</td>
+                </tr>
+                <tr>
+                    <th scope="row">4</th>
+                    <td><b th:text="${el.couple4}"/></td>
+                    <td>13:10-14:40</td>
+                </tr>
+                <tr>
+                    <th scope="row">5</th>
+                    <td><b th:text="${el.couple5}"/></td>
+                    <td>15:00-16:30</td>
+                </tr>
+                <tr>
+                    <th scope="row">6</th>
+                    <td><b th:text="${el.couple6}"/></td>
+                    <td>16:40-18:10</td>
+                </tr>
+                <tr>
+                    <th scope="row">7</th>
+                    <td><b th:text="${el.couple7}"/></td>
+                    <td>18:20-19:50</td>
+                </tr>
+                <tr>
+                    <th scope="row">#</th>
+                    <td><b>Какая неделя?</b></td>
+                    <td><b th:text="${el.parity}"/></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    <div th:insert="blocks/footer :: footer"></div>
 </body>
 </html>

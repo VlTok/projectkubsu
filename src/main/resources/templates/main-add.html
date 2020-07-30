@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:insert="blocks/head :: head">
+</head>
+    <body>
+        <header th:insert="blocks/header :: header"></header>
+        <div class="container mt-5 mb-5">
+            <h1>Добавление статьи</h1>
+            <div class="form-group">
+                <form action="/main/add" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <input type="text" name="team" placeholder="Введите группу" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="subgroup" placeholder="Введите подгруппу" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="day_of_week" placeholder="Введите день недели" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="parity" placeholder="Введите чётная или нечётная неделя" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="couple1" placeholder="Введите 1 пару , которая в 8:00" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="couple2" placeholder="Введите 2 пару , которая в 9:40" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="couple3" placeholder="Введите 3 пару , которая в 11:30" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="couple4" placeholder="Введите 4 пару , которая в 13:10" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="couple5" placeholder="Введите 5 пару , которая в 15:00" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="couple6" placeholder="Введите 6 пару , которая в 16:40" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="couple7" placeholder="Введите 7 пару , которая в 18:20" class="form-control"><br>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success">Добавить расписание</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div th:insert="blocks/footer :: footer"></div>
+    </body>
+</html>
