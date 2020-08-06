@@ -4,7 +4,22 @@
 </head>
 <body>
 <header th:insert="blocks/header :: header"></header>
-
+<div class="container">
+    <p>Приветствую тебя пользователь в веб-приложении,
+        созданным студентом Кубанского государственного
+        университета. Здесь ты можешь найти расписание
+        своей группы и подгруппы(если она есть).
+        Однако, чтобы использовать сервис для начало
+        зарегистрируйся или авторизируйся в системе.</p>
+    <div class="row flex-nowrap justify-content-between align-items-center">
+        <div class="ml-5 col-4">
+            <a href="/login" class="btn btn-dark">Авторизоваться</a>
+        </div>
+        <div class="col-4">
+            <a href="/registration" class="btn btn-dark">Зарегистрироваться</a>
+        </div>
+    </div>
+</div>
 <div th:insert="blocks/footer :: footer"></div>
 </body>
 </html>

@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:insert="blocks/head :: head">
+</head>
+<body>
+<header th:insert="blocks/header :: header"></header>
+<div class="container">
+    <h2>Список пользователей</h2>
+    <table class="table table-sm table-hover col-lg-8 col-md-8 col-sm-12">
+        <thead>
+        <tr>
+            <th scope="col">Имя</th>
+            <th scope="col">Роль</th>
+            <th scope="col">#</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="el : ${users}">
+            <td scope="row"><b th:text="${el.username}"></b></td>
+            <td th:each="role : ${el.roles}"><b th:text="${role}"></b></td>
+            <td><a th:href="'/user/' + ${el.id}">edit</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div th:insert="blocks/footer :: footer"></div>
+</body>
+</html>

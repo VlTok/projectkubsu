@@ -1,9 +1,6 @@
 package com.kubsu.project.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Post {
@@ -18,19 +15,23 @@ public class Post {
     private String couple5;
     private String couple6;
     private String couple7;
-    private String day_of_week;
+    private String dayOfWeek;
     private String team;
     private String parity;
     private String subgroup;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User author;
+
     public Post() {
     }
 
-    public Post(String team, String subgroup, String day_of_week, String parity, String couple1
-            , String couple2, String couple3, String couple4, String couple5, String couple6, String couple7){
+    public Post(String team, String subgroup, String dayOfWeek, String parity, String couple1,
+                String couple2, String couple3, String couple4, String couple5, String couple6,
+                String couple7, User user){
         this.team = team;
         this.subgroup = subgroup;
-        this.day_of_week=day_of_week;
+        this.dayOfWeek = dayOfWeek;
         this.parity=parity;
         this.couple1=couple1;
         this.couple2=couple2;
@@ -39,6 +40,7 @@ public class Post {
         this.couple5=couple5;
         this.couple6=couple6;
         this.couple7=couple7;
+        this.author= user;
     }
 
     public Long getId() {
@@ -65,12 +67,12 @@ public class Post {
         this.subgroup = my_subgroup;
     }
 
-    public String getDay_of_week() {
-        return day_of_week;
+    public String getDayOfWeek() {
+        return dayOfWeek;
     }
 
-    public void setDay_of_week(String day_of_week) {
-        this.day_of_week = day_of_week;
+    public void setDayOfWeek(String day_of_week) {
+        this.dayOfWeek = day_of_week;
     }
 
     public String getParity() {
@@ -135,5 +137,13 @@ public class Post {
 
     public void setCouple7(String couple7) {
         this.couple7 = couple7;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
     }
 }

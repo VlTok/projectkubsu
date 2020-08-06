@@ -4,7 +4,14 @@
 </head>
 <body>
 <header th:insert="blocks/header :: header"></header>
-
+<div class="container">
+    <h2>Авторизация</h2>
+    <div th:class="'alert alert-'+${messageType}">
+        <b th:text="${message}"/>
+    </div>
+    <div th:insert="blocks/login :: login(path=@{/login})" ></div>
+    <a href="/registration">Add new user</a>
+</div>
 <div th:insert="blocks/footer :: footer"></div>
 </body>
 </html>

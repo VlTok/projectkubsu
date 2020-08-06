@@ -1,0 +1,30 @@
+<div xmlns:th="http://www.thymeleaf.org">
+    <div th:fragment="login(path)">
+        <form th:action="${path}" method="post">
+            <div class="form-group" th:if="${path}=='/registration'">
+                <label class="col-sm-2 col-form-label"> Электронная почта:</label>
+                <div class="col-sm-6">
+                    <input class="form-control" type="email" name="email" placeholder="Электронная почта"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 col-form-label"> Имя пользователя:</label>
+                <div class="col-sm-6">
+                    <input class="form-control" type="text" name="username" placeholder="Логин"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 col-form-label"> Пароль:</label>
+                <div class="col-sm-6">
+                    <input class="form-control" type="password" name="password" placeholder="Пароль"/>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-sm btn-outline-secondary">Sign In</button>
+        </form>
+    </div>
+    <div th:fragment="logout">
+        <form th:action="@{/logout}" method="post">
+            <input class="btn btn-sm btn-outline-secondary mr-1" type="submit" value="Выйти"/>
+        </form>
+    </div>
+</div>

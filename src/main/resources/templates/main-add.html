@@ -7,7 +7,7 @@
         <div class="container mt-5 mb-5">
             <h1>Добавление статьи</h1>
             <div class="form-group">
-                <form action="/main/add" method="post" enctype="multipart/form-data">
+                <form th:action="@{/main/add}" method="post">
                     <div class="form-group">
                         <input type="text" name="team" placeholder="Введите группу" class="form-control">
                     </div>
@@ -15,7 +15,7 @@
                         <input type="text" name="subgroup" placeholder="Введите подгруппу" class="form-control">
                     </div>
                     <div class="form-group">
-                        <input type="text" name="day_of_week" placeholder="Введите день недели" class="form-control">
+                        <input type="text" name="dayOfWeek" placeholder="Введите день недели" class="form-control">
                     </div>
                     <div class="form-group">
                         <input type="text" name="parity" placeholder="Введите чётная или нечётная неделя" class="form-control">

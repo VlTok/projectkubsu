@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:insert="blocks/head :: head">
+</head>
+<body>
+<header th:insert="blocks/header :: header"></header>
+<div class="container">
+    <h1 class="mb-5">Доступ запрещён</h1>
+    <div class="row flex-nowrap justify-content-between align-items-center mt-5">
+        <div class="ml-5 col-4">
+            <a href="/" class="">Страница при входе</a>
+        </div>
+        <div class="col-4">
+            <a href="/main" class="">Расписание</a>
+        </div>
+    </div>
+</div>
+<div th:insert="blocks/footer :: footer"></div>
+</body>
+</html>
