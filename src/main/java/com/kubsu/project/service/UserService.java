@@ -1,12 +1,12 @@
 package com.kubsu.project.service;
 
-import com.kubsu.project.domain.Role;
-import com.kubsu.project.domain.User;
+import com.kubsu.project.models.Role;
+import com.kubsu.project.models.User;
 import com.kubsu.project.repos.UserRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -17,18 +17,24 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final MailSender mailSender;
+    private final PasswordEncoder passwordEncoder;
 
-    @Value("${hostname}")
-    private String hostname;
 
-    public UserService(UserRepository userRepository, MailSender mailSender) {
+    public UserService(UserRepository userRepository, MailSender mailSender, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.mailSender = mailSender;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username);
+        User user= userRepository.findByUsername(username);
+
+        if (user==null) {
+            throw new UsernameNotFoundException("Пользователь был не найден!");
+        }
+
+        return user;
     }
     public User findById(Long id){
         return userRepository.findById(id).get();
@@ -39,18 +45,29 @@ public class UserService implements UserDetailsService {
     }
 
     public boolean addUser(User user) {
-        User userFromDb =userRepository.findByUsername(user.getUsername());
 
-        if(userFromDb!=null){
-            return false;
+        if (!existsUser(user)){
+             return false;
         }
+
         user.setActive(true);
         user.setRoles(Collections.singleton(Role.USER));
         user.setActivationCode(UUID.randomUUID().toString());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         userRepository.save(user);
 
         sendMessage(user);
+        return true;
+    }
+
+    public boolean existsUser(User user){
+        User userFromDb = userRepository.findByUsername(user.getUsername());
+
+        if (userFromDb!=null){
+            return false;
+        }
+
         return true;
     }
 
@@ -95,10 +112,14 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public void updateProfile(User user, String password, String email) {
+    public void updateProfile(User user, String password, String email, String username) {
         String userEmail = user.getEmail();
+        String userUsername = user.getUsername();
 
-        boolean isEmailChanged = ((email!=null && !email.equals(userEmail)) || (userEmail!=null && !userEmail.equals(email)));
+        boolean isEmailChanged = isUsernameOrEmailChanged(userEmail,email);
+        if (isUsernameOrEmailChanged(userUsername,username)){
+            user.setUsername(username);
+        }
         if (isEmailChanged){
             user.setEmail(email);
 
@@ -107,12 +128,15 @@ public class UserService implements UserDetailsService {
             }
         }
         if (!StringUtils.isEmpty(password)){
-            user.setPassword(password);
+            user.setPassword(passwordEncoder.encode(password));
         }
         userRepository.save(user);
 
         if(isEmailChanged) {
             sendMessage(user);
         }
+    }
+    public boolean isUsernameOrEmailChanged(String userUsernameOrEmail, String usernameOrEmail){
+        return ((usernameOrEmail!=null&&!usernameOrEmail.equals(userUsernameOrEmail))||(userUsernameOrEmail!=null&&!userUsernameOrEmail.equals(usernameOrEmail)));
     }
 }

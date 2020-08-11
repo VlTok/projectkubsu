@@ -4,86 +4,86 @@
 </head>
 <body>
     <header th:insert="blocks/header :: header"></header>
-        <div class="container">
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <form method="get" th:action="@{/main}" class="form-inline">
-                        <input class="form-control" type="text" th:value="${team}" name="team" placeholder="Группа">
-                        <input class="form-control" type="text" th:value="${subgroup}" name="subgroup" placeholder="Подгруппа">
-                        <button type="submit" class="btn btn-dark">Поиск</button>
-                    </form>
-                </div>
+    <div class="container">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <form method="get" th:action="@{/main}" class="form-inline">
+                    <input class="form-control" type="text" th:value="${team}" name="team" placeholder="Группа">
+                    <input class="form-control" type="text" th:value="${subgroup}" name="subgroup" placeholder="Подгруппа">
+                    <button type="submit" class="btn btn-dark">Поиск</button>
+                </form>
             </div>
         </div>
-        <div class="container" th:each="el : ${page}">
-            <table class="table table-sm table-hover col-lg-10 col-md-10 col-sm-12">
-                <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col"><i th:text="${el.dayOfWeek}"/></th>
-                    <th scope="col"> <i th:text="${el.team}"/>/<i th:text="${el.subgroup}"/> </th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <th scope="row">1</th>
-                    <td><b th:text="${el.couple1}"/></td>
-                    <td>8:00-9:30</td>
-                </tr>
-                <tr>
-                    <th scope="row">2</th>
-                    <td><b th:text="${el.couple2}"/></td>
-                    <td>9:40-11:10</td>
-                </tr>
-                <tr>
-                    <th scope="row">3</th>
-                    <td><b th:text="${el.couple3}"/></td>
-                    <td>11:30-13:00</td>
-                </tr>
-                <tr>
-                    <th scope="row">4</th>
-                    <td><b th:text="${el.couple4}"/></td>
-                    <td>13:10-14:40</td>
-                </tr>
-                <tr>
-                    <th scope="row">5</th>
-                    <td><b th:text="${el.couple5}"/></td>
-                    <td>15:00-16:30</td>
-                </tr>
-                <tr>
-                    <th scope="row">6</th>
-                    <td><b th:text="${el.couple6}"/></td>
-                    <td>16:40-18:10</td>
-                </tr>
-                <tr>
-                    <th scope="row">7</th>
-                    <td><b th:text="${el.couple7}"/></td>
-                    <td>18:20-19:50</td>
-                </tr>
-                <tr>
-                    <th scope="row">#</th>
-                    <td><b>Какая неделя?</b></td>
-                    <td><b th:text="${el.parity}"/></td>
-                </tr>
-                <tr>
-                    <th scope="row">#</th>
-                    <td><b>Автор расписания</b></td>
-                    <td><b th:text="${el.author.username}"/></td>
-                </tr>
-                <tr sec:authorize="hasAuthority('ADMIN')">>
-                    <th scope="row">#</th>
-                    <td>
-                        <a th:href="'/main/'+${el.id}+'/edit'" class="btn btn-warning">Редактировать</a>
-                    </td>
-                    <td>
-                        <form th:action="'/main/'+ ${el.id} + '/remove'" method="post">
-                            <button class="btn btn-warning">Удалить</button>
-                        </form>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+    </div>
+    <div class="container" th:each="el : ${page}">
+        <table class="table table-sm table-hover col-lg-10 col-md-10 col-sm-12">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col"><i th:text="${el.dayOfWeek}"/></th>
+                <th scope="col"> <i th:text="${el.team}"/>/<i th:text="${el.subgroup}"/> </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td><b th:text="${el.couple1}"/></td>
+                <td>8:00-9:30</td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td><b th:text="${el.couple2}"/></td>
+                <td>9:40-11:10</td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td><b th:text="${el.couple3}"/></td>
+                <td>11:30-13:00</td>
+            </tr>
+            <tr>
+                <th scope="row">4</th>
+                <td><b th:text="${el.couple4}"/></td>
+                <td>13:10-14:40</td>
+            </tr>
+            <tr>
+                <th scope="row">5</th>
+                <td><b th:text="${el.couple5}"/></td>
+                <td>15:00-16:30</td>
+            </tr>
+            <tr>
+                <th scope="row">6</th>
+                <td><b th:text="${el.couple6}"/></td>
+                <td>16:40-18:10</td>
+            </tr>
+            <tr>
+                <th scope="row">7</th>
+                <td><b th:text="${el.couple7}"/></td>
+                <td>18:20-19:50</td>
+            </tr>
+            <tr>
+                <th scope="row">#</th>
+                <td><b>Какая неделя?</b></td>
+                <td><b th:text="${el.parity}"/></td>
+            </tr>
+            <tr>
+                <th scope="row">#</th>
+                <td><b>Автор расписания</b></td>
+                <td><b th:text="${el.author.username}"/></td>
+            </tr>
+            <tr sec:authorize="hasAuthority('ADMIN')">
+                <th scope="row">#</th>
+                <td>
+                    <a th:href="'/main/'+${el.id}+'/edit'" class="btn my-btn">Редактировать</a>
+                </td>
+                <td>
+                    <form th:action="'/main/'+ ${el.id} + '/remove'" method="post">
+                        <button class="btn my-btn">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
     <div th:insert="blocks/footer :: footer"></div>
 </body>
 </html>

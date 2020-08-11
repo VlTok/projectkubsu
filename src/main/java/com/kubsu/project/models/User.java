@@ -1,10 +1,14 @@
-package com.kubsu.project.domain;
+package com.kubsu.project.models;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -14,10 +18,18 @@ public class User implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @NotBlank(message = "Имя пользователя не может быть пустым!")
+    @Size(max = 10,message = "Имя пользователя не может быть больше 10 символов!")
     private String username;
+    @NotBlank(message = "Пароль не может быть пустым!")
+    @Size(min = 4,message = "Пароль не может быть меньше 4 символов!")
     private String password;
+
     private boolean active;
 
+    @NotBlank(message = "Почта не может быть пустой!")
+    @Email(message = "Введите верный формат электронной почты!")
     private String email;
     private String activationCode;
 
@@ -107,5 +119,18 @@ public class User implements UserDetails{
 
     public void setActivationCode(String activationCode) {
         this.activationCode = activationCode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id.equals(user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

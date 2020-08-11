@@ -1,7 +1,7 @@
 package com.kubsu.project.controllers;
 
-import com.kubsu.project.domain.User;
-import com.kubsu.project.domain.Post;
+import com.kubsu.project.models.Post;
+import com.kubsu.project.models.User;
 import com.kubsu.project.repos.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,8 +11,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -46,17 +51,24 @@ public class MainController {
     }
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/main/add")
-    public String mainAdd(Model model){
+    public String mainAdd(Post post,Model model){
         return "main-add";
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/main/add")
-    public String mainPostAdd(@AuthenticationPrincipal User user, Post post, Model model) {
+    public String mainPostAdd(@AuthenticationPrincipal User user, @Valid Post post, BindingResult bindingResult, Model model) {
         post.setAuthor(user);
 
-        postRepository.save(post);
+        if(bindingResult.hasErrors()) {
 
+            model.addAttribute("post", post);
+            return "main-add";
+        }
+        else {
+            model.addAttribute("post", null);
+            postRepository.save(post);
+        }
         return "redirect:/main";
     }
 

@@ -1,15 +1,16 @@
 package com.kubsu.project.controllers;
 
-import com.kubsu.project.domain.User;
-import com.kubsu.project.domain.Role;
-import com.kubsu.project.repos.UserRepository;
+import com.kubsu.project.models.Role;
+import com.kubsu.project.models.User;
 import com.kubsu.project.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 @Controller
@@ -48,19 +49,31 @@ public class UserController {
     }
 
     @GetMapping("profile")
-    public String getProfile(Model model, @AuthenticationPrincipal User user){
-        model.addAttribute("username",user.getUsername());
-        model.addAttribute("email", user.getEmail());
+    public String getProfile( @AuthenticationPrincipal User userPresent,User user,Model model){
+        model.addAttribute("usernamePresent",userPresent.getUsername());
+        model.addAttribute("emailPresent",userPresent.getEmail());
 
         return "user-profile";
     }
 
     @PostMapping("profile")
-    public String updateProfile(@AuthenticationPrincipal User user,
-                                @RequestParam String password,
-                                @RequestParam String email
-    ){
-        userService.updateProfile(user,password,email);
-        return "redirect:/user/profile";
+    public String updateProfile(@AuthenticationPrincipal User userPresent, @RequestParam("password2") String passwordConfirm,@Valid User user
+                                , BindingResult bindingResult,
+                                Model model){
+        ControllerUtils controllerUtils=new ControllerUtils();
+
+        boolean isConfirmEmpty = controllerUtils.isConfirmEmptyAndPasswordError(passwordConfirm, user, model);
+        if(isConfirmEmpty || bindingResult.hasErrors()){
+            return "user-profile";
+        }
+
+        boolean userExists= userService.existsUser(user);
+        if (!userExists){
+            model.addAttribute("usernameError", "Такое имя пользователя уже существует!");
+            return "user-profile";
+        }
+        userService.updateProfile(userPresent,user.getPassword(),user.getEmail(),user.getUsername());
+        return "redirect:/main";
     }
+
 }

@@ -1,6 +1,9 @@
-package com.kubsu.project.domain;
+package com.kubsu.project.models;
+
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 public class Post {
@@ -8,16 +11,30 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Length(max = 255, message = "Информация о первой паре слишком длинная (больше чем 255)")
     private String couple1;
+    @Length(max = 255, message = "Информация о второй паре слишком длинная (больше чем 255)")
     private String couple2;
+    @Length(max = 255, message = "Информация о третьей паре слишком длинная (больше чем 255)")
     private String couple3;
+    @Length(max = 255, message = "Информация о четвёртой паре слишком длинная (больше чем 255)")
     private String couple4;
+    @Length(max = 255, message = "Информация о пятой паре слишком длинная (больше чем 255)")
     private String couple5;
+    @Length(max = 255, message = "Информация о шестой паре слишком длинная (больше чем 255)")
     private String couple6;
+    @Length(max = 255, message = "Информация о седьмой паре слишком длинная (больше чем 255)")
     private String couple7;
+
+    @NotBlank(message = "День недели не может быть пустым!")
+    @Length(max = 255, message = "Информация о дне недели слишком длинная (больше чем 255)")
     private String dayOfWeek;
+    @NotBlank(message = "Номер группы не может быть пустым!")
     private String team;
+    @NotBlank(message = "Чётность недели не может быть пустой!")
+    @Length(max = 255, message = "Информация о чётности недели слишком длинная (больше чем 255)")
     private String parity;
+    @NotBlank(message = "Номер подгруппы не может быть пустым! Если у группы нет подгруппы укажите номер подгруппы равный 0")
     private String subgroup;
 
     @ManyToOne(fetch = FetchType.EAGER)

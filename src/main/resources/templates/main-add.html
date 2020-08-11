@@ -7,42 +7,53 @@
         <div class="container mt-5 mb-5">
             <h1>Добавление статьи</h1>
             <div class="form-group">
-                <form th:action="@{/main/add}" method="post">
+                <form th:action="@{/main/add}" th:object="${post}" method="post">
                     <div class="form-group">
-                        <input type="text" name="team" placeholder="Введите группу" class="form-control">
+                        <input th:class="${#fields.hasErrors('team')} ? 'form-control is-invalid' : 'form-control'" th:field="*{team}" th:value="*{team}" type="text" name="team" placeholder="Введите группу">
+                        <b th:if="${#fields.hasErrors('team')}" th:class="${#fields.hasErrors('team')} ? 'invalid-feedback':''" th:errors="*{team}">Team error</b>
                     </div>
                     <div class="form-group">
-                        <input type="text" name="subgroup" placeholder="Введите подгруппу" class="form-control">
+                        <input th:class="${#fields.hasErrors('subgroup')} ? 'form-control is-invalid' : 'form-control'" th:field="*{subgroup}" th:value="*{subgroup}" type="text" name="subgroup" placeholder="Введите подгруппу">
+                        <b th:if="${#fields.hasErrors('subgroup')}" th:class="${#fields.hasErrors('subgroup')} ? 'invalid-feedback':''" th:errors="*{subgroup}">Subgroup error</b>
                     </div>
                     <div class="form-group">
-                        <input type="text" name="dayOfWeek" placeholder="Введите день недели" class="form-control">
+                        <input th:class="${#fields.hasErrors('dayOfWeek')} ? 'form-control is-invalid' : 'form-control'" th:field="*{dayOfWeek}" th:value="*{dayOfWeek}" type="text" name="dayOfWeek" placeholder="Введите день недели">
+                        <b th:if="${#fields.hasErrors('dayOfWeek')}" th:class="${#fields.hasErrors('dayOfWeek')} ? 'invalid-feedback':''" th:errors="*{dayOfWeek}">DayOfWeek error</b>
                     </div>
                     <div class="form-group">
-                        <input type="text" name="parity" placeholder="Введите чётная или нечётная неделя" class="form-control">
+                        <input th:class="${#fields.hasErrors('parity')} ? 'form-control is-invalid' : 'form-control'" th:field="*{parity}" th:value="*{parity}" type="text" name="parity" placeholder="Введите чётная или нечётная неделя">
+                        <b th:if="${#fields.hasErrors('parity')}" th:class="${#fields.hasErrors('parity')} ? 'invalid-feedback':''" th:errors="*{parity}">Parity error</b>
                     </div>
                     <div class="form-group">
-                        <input type="text" name="couple1" placeholder="Введите 1 пару , которая в 8:00" class="form-control">
+                        <input th:class="${#fields.hasErrors('couple1')} ? 'form-control is-invalid' : 'form-control'" th:field="*{couple1}" th:value="*{couple1}" type="text" name="couple1" placeholder="Введите 1 пару , которая в 8:00">
+                        <b th:if="${#fields.hasErrors('couple1')}" th:class="${#fields.hasErrors('couple1')} ? 'invalid-feedback':''" th:errors="*{couple1}">Couple1 error</b>
                     </div>
                     <div class="form-group">
-                        <input type="text" name="couple2" placeholder="Введите 2 пару , которая в 9:40" class="form-control">
+                        <input th:class="${#fields.hasErrors('couple2')} ? 'form-control is-invalid' : 'form-control'" th:field="*{couple2}" th:value="*{couple2}" type="text" name="couple2" placeholder="Введите 2 пару , которая в 9:40">
+                        <b th:if="${#fields.hasErrors('couple2')}" th:class="${#fields.hasErrors('couple2')} ? 'invalid-feedback':''" th:errors="*{couple2}">Couple2 error</b>
                     </div>
                     <div class="form-group">
-                        <input type="text" name="couple3" placeholder="Введите 3 пару , которая в 11:30" class="form-control">
+                        <input th:class="${#fields.hasErrors('couple3')} ? 'form-control is-invalid' : 'form-control'" th:field="*{couple3}" th:value="*{couple3}" type="text" name="couple3" placeholder="Введите 3 пару , которая в 11:30">
+                        <b th:if="${#fields.hasErrors('couple3')}" th:class="${#fields.hasErrors('couple3')} ? 'invalid-feedback':''" th:errors="*{couple3}">Couple3 error</b>
                     </div>
                     <div class="form-group">
-                        <input type="text" name="couple4" placeholder="Введите 4 пару , которая в 13:10" class="form-control">
+                        <input th:class="${#fields.hasErrors('couple4')} ? 'form-control is-invalid' : 'form-control'" th:field="*{couple4}" th:value="*{couple4}" type="text" name="couple4" placeholder="Введите 4 пару , которая в 13:10">
+                        <b th:if="${#fields.hasErrors('couple4')}" th:class="${#fields.hasErrors('couple4')} ? 'invalid-feedback':''" th:errors="*{couple4}">Couple4 error</b>
                     </div>
                     <div class="form-group">
-                        <input type="text" name="couple5" placeholder="Введите 5 пару , которая в 15:00" class="form-control">
+                        <input th:class="${#fields.hasErrors('couple5')} ? 'form-control is-invalid' : 'form-control'" th:field="*{couple5}" th:value="*{couple5}" type="text" name="couple5" placeholder="Введите 5 пару , которая в 15:00">
+                        <b th:if="${#fields.hasErrors('couple5')}" th:class="${#fields.hasErrors('couple5')} ? 'invalid-feedback':''" th:errors="*{couple5}">Couple5 error</b>
                     </div>
                     <div class="form-group">
-                        <input type="text" name="couple6" placeholder="Введите 6 пару , которая в 16:40" class="form-control">
+                        <input th:class="${#fields.hasErrors('couple6')} ? 'form-control is-invalid' : 'form-control'" th:field="*{couple6}" th:value="*{couple6}" type="text" name="couple6" placeholder="Введите 6 пару , которая в 16:40">
+                        <b th:if="${#fields.hasErrors('couple6')}" th:class="${#fields.hasErrors('couple6')} ? 'invalid-feedback':''" th:errors="*{couple6}">Couple6 error</b>
                     </div>
                     <div class="form-group">
-                        <input type="text" name="couple7" placeholder="Введите 7 пару , которая в 18:20" class="form-control"><br>
+                        <input th:class="${#fields.hasErrors('couple7')} ? 'form-control is-invalid' : 'form-control'" th:field="*{couple7}" th:value="*{couple7}" type="text" name="couple7" placeholder="Введите 7 пару , которая в 18:20">
+                        <b th:if="${#fields.hasErrors('couple7')}" th:class="${#fields.hasErrors('couple7')} ? 'invalid-feedback':''" th:errors="*{couple7}">Couple7 error</b>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-success">Добавить расписание</button>
+                        <button type="submit" class="btn my-btn">Добавить расписание</button>
                     </div>
                 </form>
             </div>

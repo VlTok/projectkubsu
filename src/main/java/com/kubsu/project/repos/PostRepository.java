@@ -1,6 +1,6 @@
 package com.kubsu.project.repos;
 
-import com.kubsu.project.domain.Post;
+import com.kubsu.project.models.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;

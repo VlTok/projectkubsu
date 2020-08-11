@@ -1,4 +1,4 @@
-package com.kubsu.project.domain;
+package com.kubsu.project.models;
 
 import org.springframework.security.core.GrantedAuthority;
 

@@ -1,0 +1,89 @@
+nav{
+    max-height: 110px;
+    background-image: linear-gradient(to right, rgb(22, 143, 224), rgb(20, 130, 211), rgb(18, 118, 199), rgb(16, 105, 186), rgb(14, 92, 173), rgb(12, 79, 160), rgb(10, 67, 148), rgb(8, 54, 135), rgb(6, 41, 122), rgb(4, 28, 109), rgb(2, 16, 97), rgb(0, 3, 84));
+}
+footer{
+}
+body{
+    color: #00008B;
+}
+@media (max-width: 785px) {
+    .click-menu-element {
+        background-image: linear-gradient(to right, rgb(22, 143, 224), rgb(20, 130, 211), rgb(18, 118, 199), rgb(16, 105, 186), rgb(14, 92, 173), rgb(12, 79, 160), rgb(10, 67, 148), rgb(8, 54, 135), rgb(6, 41, 122), rgb(4, 28, 109), rgb(2, 16, 97), rgb(0, 3, 84)) !important;
+    }
+}
+.font_size_1{
+    font-size: 11pt;
+}
+.font_size_2{
+    font-size: 16pt;
+}
+.my-fa-bars{
+    text-decoration: none;
+    color: #FFB841 !important;
+}
+.footer_a{
+    text-decoration: none !important;
+    color: #A9A9A9 !important;
+}
+.footer_a:hover{
+    color: #696969 !important;
+}
+.navbar-brand{
+    color: #FFFFFF !important;
+    font-size: 14pt !important;
+}
+@media (max-width: 1200px){
+    .navbar-brand{
+        font-size: 0pt !important;
+    }
+}
+.nav-link{
+    color: #FFFFFF !important;
+}
+.nav-link:hover{
+    background: #FFFFFF;
+    color: #168FE0 !important;
+}
+.nav-item{
+    padding-right: 20px;
+}
+.navbar-toggler{
+    border-color: #FFFFFF !important;
+}
+.navbar-toggler:hover{
+    background-color: #168FE0 !important;
+    border-color: #FFFFFF !important;
+}
+.my-font-color{
+    color: #FFFFFF !important;
+}
+.my-border{
+    border-color: #FFFFFF !important;
+}
+.my-btn{
+    color: #FFFFFF;
+    background-color: #168FE0;
+    border-color: #FFFFFF !important;
+}
+.my-btn:hover{
+    color: #168FE0;
+    background-color: #FFFFFF;
+    border-color: #000354 !important;
+}
+.btnformy1{
+    color: #ffffff !important;
+}
+.my-margin-bottom{
+    margin-bottom: 80px;
+}
+.my-margin-top{
+    margin-top: 230px;
+}
+.my-white-space{
+    white-space: pre-line;
+}
+.turbolinks-progress-bar{
+    height: 5px;
+    background-color: #168FE0;
+}
