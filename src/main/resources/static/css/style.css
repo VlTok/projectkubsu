@@ -18,6 +18,9 @@ body{
 .font_size_2{
     font-size: 16pt;
 }
+.font_size_3{
+    font-size: 13pt;
+}
 .my-fa-bars{
     text-decoration: none;
     color: #FFB841 !important;

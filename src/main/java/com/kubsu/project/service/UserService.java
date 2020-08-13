@@ -3,6 +3,7 @@ package com.kubsu.project.service;
 import com.kubsu.project.models.Role;
 import com.kubsu.project.models.User;
 import com.kubsu.project.repos.UserRepository;
+import com.kubsu.project.utils.RandomPasswordGenerator;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -40,6 +41,8 @@ public class UserService implements UserDetailsService {
         return userRepository.findById(id).get();
     }
 
+    public User findByUsernameAndEmail(String username,String email){ return userRepository.findByUsernameAndEmail(username,email);}
+
     public List<User> findAll() {
         return userRepository.findAll();
     }
@@ -49,8 +52,7 @@ public class UserService implements UserDetailsService {
         if (!existsUser(user)){
              return false;
         }
-
-        user.setActive(true);
+        user.setActive(false);
         user.setRoles(Collections.singleton(Role.USER));
         user.setActivationCode(UUID.randomUUID().toString());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -59,6 +61,17 @@ public class UserService implements UserDetailsService {
 
         sendMessage(user);
         return true;
+    }
+
+    public void recoverUser(User user){
+        RandomPasswordGenerator randomPasswordGenerator = new RandomPasswordGenerator();
+        String password = randomPasswordGenerator.generatePassayPassword();
+
+        user.setPassword(passwordEncoder.encode(password));
+
+        userRepository.save(user);
+
+        sendRecoverMessage(user,password);
     }
 
     public boolean existsUser(User user){
@@ -78,6 +91,7 @@ public class UserService implements UserDetailsService {
             return false;
         }
         user.setActivationCode(null);
+        user.setActive(true);
 
         userRepository.save(user);
 
@@ -87,12 +101,23 @@ public class UserService implements UserDetailsService {
     private void sendMessage(User user) {
         if(!StringUtils.isEmpty(user.getEmail())){
             String message = String.format(
-                    "Hello, %s!\n"
-                            +"Welcome to BestBlogEver. Please,visit next link: http://localhost:8080/activate/%s",
+                    "Привет, %s!\n"
+                            +"Приветствую тебя в веб-приложении <<Расписание Кубанского государственного университета>>. Пожалуйста, для потдверждения своей почты перейдите по ссылке: http://localhost:8080/activate/%s",
                     user.getUsername(),
                     user.getActivationCode()
             );
             mailSender.send(user.getEmail(),"Activation code", message);
+        }
+    }
+
+    private void sendRecoverMessage(User user, String password){
+        if (!StringUtils.isEmpty(user.getEmail())){
+            String message = String.format(
+                    "Привет, %s!\n" + "Это письмо для восстановления доступа к аккаунту. Ваш новый пароль: %s . После входа в аккаунт по возможности поменяйте его!!!",
+                    user.getUsername(),
+                    password
+            );
+            mailSender.send(user.getEmail(),"Восстановление доступа к аккаунту",message);
         }
     }
 

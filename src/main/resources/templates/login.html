@@ -10,10 +10,11 @@
         <b th:text="${message}"></b>
     </div>
     <div th:if="${param.error}" class="alert alert-danger">
-        <b>Неправильный логин или пароль!</b>
+        <b>Неправильный логин или пароль! Проверьте, активировали ли вы свой аккаунт!</b>
     </div>
     <div th:insert="blocks/login :: login(path=@{/login},user=null,password2=null,captchaError=null)" ></div>
-    <a class="btn my-btn" href="/registration">Зарегистрироваться</a>
+    <a class="btn my-btn" href="/registration">Зарегистрироваться</a><br>
+    <a href="/recover">Забыли пароль?</a>
 </div>
 <div th:insert="blocks/footer :: footer"></div>
 </body>

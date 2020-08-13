@@ -4,6 +4,7 @@ import com.kubsu.project.models.User;
 import com.kubsu.project.models.dto.CaptchaResponseDto;
 import com.kubsu.project.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,7 +29,7 @@ public class RegistrationController {
     }
 
     @Value("${recaptcha.secret}")
-    public String secret;
+    private String secret;
 
     @GetMapping("/registration")
     public String registration(User user, Model model){
@@ -36,7 +37,7 @@ public class RegistrationController {
     }
 
     @PostMapping("/registration")
-    public String addUser(@RequestParam("password2") String passwordConfirm,@RequestParam("g-recaptcha-response") String captchaResponse, @Valid User user, BindingResult bindingResult, Model model){
+    public String addUser(@RequestParam("password2") String passwordConfirm, @Nullable @RequestParam("g-recaptcha-response") String captchaResponse, @Valid User user, BindingResult bindingResult, Model model){
         String url=String.format(CAPTCHA_URL,secret,captchaResponse);
         CaptchaResponseDto response = restTemplate.postForObject(url, Collections.emptyList(), CaptchaResponseDto.class);
         if (response == null) {

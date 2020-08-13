@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:insert="blocks/head :: head">
+</head>
+<body>
+<header th:insert="blocks/header :: header"></header>
+<div class="container">
+    <h2>Восстановление доступа к аккаунту</h2>
+    <div class="alert alert-danger" th:if="${not #lists.isEmpty(nonExistsUser)}">
+        <b th:text="${nonExistsUser}"></b>
+    </div>
+    <form th:action="@{/recover}" method="post">
+        <div class="form-group">
+            <label class="col-sm-2 col-form-label"> Электронная почта:</label>
+            <div class="col-sm-6">
+                <input class="form-control" type="text" name="email" placeholder="Электронная почта"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 col-form-label"> Имя пользователя:</label>
+            <div class="col-sm-6">
+                <input class="form-control" type="text" name="username" placeholder="Логин"/>
+            </div>
+        </div>
+        <button type="submit" class="btn my-btn">Восстановить доступ к аккаунту</button>
+    </form>
+</div>
+<div th:insert="blocks/footer :: footer"></div>
+</body>
+</html>
