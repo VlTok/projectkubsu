@@ -4,6 +4,7 @@ import com.kubsu.project.models.Role;
 import com.kubsu.project.models.User;
 import com.kubsu.project.repos.UserRepository;
 import com.kubsu.project.utils.RandomPasswordGenerator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,6 +27,9 @@ public class UserService implements UserDetailsService {
         this.mailSender = mailSender;
         this.passwordEncoder = passwordEncoder;
     }
+
+    @Value("${hostname}")
+    private String hostname;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -102,8 +106,9 @@ public class UserService implements UserDetailsService {
         if(!StringUtils.isEmpty(user.getEmail())){
             String message = String.format(
                     "Привет, %s!\n"
-                            +"Приветствую тебя в веб-приложении <<Расписание Кубанского государственного университета>>. Пожалуйста, для потдверждения своей почты перейдите по ссылке: http://localhost:8080/activate/%s",
+                            +"Приветствую тебя в веб-приложении <<Расписание Кубанского государственного университета>>. Пожалуйста, для потдверждения своей почты перейдите по ссылке: http://%s/activate/%s",
                     user.getUsername(),
+                    hostname,
                     user.getActivationCode()
             );
             mailSender.send(user.getEmail(),"Activation code", message);
