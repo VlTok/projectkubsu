@@ -4,7 +4,6 @@ import com.kubsu.project.models.Couple;
 import com.kubsu.project.models.User;
 import lombok.Getter;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCell;
