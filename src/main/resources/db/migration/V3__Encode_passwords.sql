@@ -1,3 +1,3 @@
 create extension if not exists pgcrypto;
-
-update usr set password = crypt(password,gen_salt('bf',8));
+update k_user
+set u_password = crypt(u_password, gen_salt('bf', 8));

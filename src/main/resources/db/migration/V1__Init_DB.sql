@@ -1,40 +1,50 @@
 create sequence hibernate_sequence start 1 increment 1;
-
-create table post (
-    id int8 not null,
-    couple1 varchar(255),
-    couple2 varchar(255),
-    couple3 varchar(255),
-    couple4 varchar(255),
-    couple5 varchar(255),
-    couple6 varchar(255),
-    couple7 varchar(255),
-    day_of_week varchar(255),
-    parity varchar(255),
-    subgroup varchar(255),
-    team varchar(255),
-    author_id int8, primary key (id)
+CREATE TABLE k_schedule
+(
+    s_id          int8         NOT NULL,
+    s_day_of_week varchar(255) not null,
+    s_parity      varchar(255) not null,
+    s_subgroup    varchar(255),
+    s_team        varchar(255) not null,
+    s_author_id   int8,
+    primary key (s_id)
 );
-
-create table user_roles (
-    user_id int8 not null,
-    roles varchar(255)
+CREATE TABLE k_couple
+(
+    c_id          int8         NOT NULL,
+    c_audience    varchar(255) not null,
+    c_title       varchar(255) not null,
+    c_type        varchar(255) not null,
+    c_time        timestamp    not null,
+    c_schedule_id int8,
+    c_teacher_id  int8,
+    PRIMARY KEY (c_id)
 );
-
-create table usr (
-    id int8 not null,
-    activation_code varchar(255),
-    active boolean not null,
-    email varchar(255),
-    password varchar(255) not null,
-    username varchar(255) not null,
-    primary key (id)
+create table user_roles
+(
+    user_u_id int8 not null,
+    roles     varchar(255)
 );
-
-alter table if exists post
-    add constraint post_user_fk
-        foreign key (author_id) references usr;
+CREATE TABLE k_user
+(
+    u_id              int8         NOT NULL,
+    u_activation_code varchar(255),
+    u_active          boolean      not null,
+    u_email           varchar(255),
+    u_password        varchar(255) not null,
+    u_username        varchar(255) not null,
+    PRIMARY KEY (u_id)
+);
+alter table if exists k_schedule
+    add constraint schedule_user_fk
+        foreign key (s_author_id) references k_user;
+alter table if exists k_couple
+    add constraint couple_user_fk
+        foreign key (c_teacher_id) references k_user;
+alter table if exists k_couple
+    add constraint couple_schedule_fk
+        foreign key (c_schedule_id) references k_user;
 
 alter table if exists user_roles
     add constraint user_roles_user_fk
-        foreign key (user_id) references usr;
+        foreign key (user_u_id) references k_user;

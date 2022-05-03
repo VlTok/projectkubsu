@@ -5,7 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.validation.Valid;
+import javax.validation.*;
 
 public class ControllerUtils {
     public ControllerUtils() {

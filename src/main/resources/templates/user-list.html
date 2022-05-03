@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head th:insert="blocks/head :: head">
 </head>
 <body>
@@ -16,7 +16,7 @@
         </thead>
         <tbody>
         <tr th:each="el : ${users}">
-            <td scope="row"><b th:text="${el.username}"></b></td>
+            <td><b th:text="${el.username}"></b></td>
             <td th:each="role : ${el.roles}"><b th:text="${role}"></b></td>
             <td><a th:href="'/user/' + ${el.id}">edit</a></td>
         </tr>
