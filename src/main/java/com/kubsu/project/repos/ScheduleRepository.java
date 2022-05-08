@@ -9,7 +9,5 @@ import org.springframework.data.repository.CrudRepository;
 public interface ScheduleRepository extends CrudRepository<Schedule, Long> {
     Page<Schedule> findAll(Pageable pageable);
 
-    Page<Schedule> findByTeamAndSubgroup(String team, String subgroup, Pageable pageable);
-
-    Page<Schedule> deleteByAuthor(User author, Pageable pageable);
+    Page<Schedule> findByTeam(String team, Pageable pageable);
 }

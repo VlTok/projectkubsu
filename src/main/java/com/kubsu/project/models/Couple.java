@@ -11,6 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 @Getter
 @Setter
 public class Couple {
@@ -20,6 +21,7 @@ public class Couple {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotNull
     @Column(name = "c_title")
     private String title;
 

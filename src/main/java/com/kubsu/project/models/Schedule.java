@@ -10,7 +10,7 @@ import java.util.List;
 @Table(name = "k_schedule")
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@Builder
 @Getter
 @Setter
 public class Schedule {
@@ -36,10 +36,19 @@ public class Schedule {
     @NotNull
     private String parity;
 
-    @Column(name = "s_subgroup")
-    private String subgroup;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "s_author_id")
     private User author;
+
+    @Override
+    public String toString() {
+        return "Schedule{" +
+                "id=" + id +
+                ", couples=" + couples +
+                ", dayOfWeek='" + dayOfWeek + '\'' +
+                ", team='" + team + '\'' +
+                ", parity='" + parity + '\'' +
+                ", author=" + author +
+                '}';
+    }
 }

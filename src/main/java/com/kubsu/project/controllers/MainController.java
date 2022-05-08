@@ -1,6 +1,6 @@
 package com.kubsu.project.controllers;
 
-import com.kubsu.project.excel.ExcelWriter;
+import com.kubsu.project.excel.ExcelWorker;
 import com.kubsu.project.models.Schedule;
 import com.kubsu.project.models.User;
 import com.kubsu.project.repos.ScheduleRepository;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.*;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -39,17 +38,16 @@ public class MainController {
     }
 
     @GetMapping("/main")
-    public String mainTimeTable(@RequestParam(required = false, defaultValue = "") String team, @RequestParam(required = false, defaultValue = "") String subgroup,
+    public String mainTimeTable(@RequestParam(required = false, defaultValue = "") String team,
                                 Model model, @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<Schedule> page;
-        if ((team != null && !team.isEmpty()) && (subgroup != null && !subgroup.isEmpty())) {
-            page = postRepository.findByTeamAndSubgroup(team, subgroup, pageable);
+        if (team != null && !team.isEmpty()) {
+            page = postRepository.findByTeam(team, pageable);
         } else {
             page = postRepository.findAll(pageable);
         }
         model.addAttribute("page", page);
         model.addAttribute("team", team);
-        model.addAttribute("subgroup", subgroup);
 
         return "main";
     }
@@ -67,7 +65,7 @@ public class MainController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/main/add")
-    public String mainPostAdd(@AuthenticationPrincipal User user, @Valid Schedule schedule, BindingResult bindingResult, Model model) {
+    public String mainPostAdd(@AuthenticationPrincipal User user, Schedule schedule, BindingResult bindingResult, Model model) {
         schedule.setAuthor(user);
 
         if (bindingResult.hasErrors()) {
@@ -114,7 +112,7 @@ public class MainController {
 
             file.transferTo(new File(pathname));
 
-            ExcelWriter.readExcelFile(user, pathname);
+            ExcelWorker.readExcelFile(user, pathname);
         }
 
         return "download-files";
