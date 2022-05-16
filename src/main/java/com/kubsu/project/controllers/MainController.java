@@ -3,7 +3,8 @@ package com.kubsu.project.controllers;
 import com.kubsu.project.excel.ExcelWorker;
 import com.kubsu.project.models.Schedule;
 import com.kubsu.project.models.User;
-import com.kubsu.project.repos.ScheduleRepository;
+import com.kubsu.project.models.dto.ScheduleDto;
+import com.kubsu.project.service.ScheduleService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,29 +24,27 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 public class MainController {
 
-    private final ScheduleRepository postRepository;
-
     @Value("${upload.path}")
     private String uploadPath;
 
-    public MainController(ScheduleRepository postRepository) {
-        this.postRepository = postRepository;
+    @Value("${errors.path}")
+    private String errorsPath;
+
+    private final ScheduleService scheduleService;
+
+    public MainController(ScheduleService scheduleService) {
+        this.scheduleService = scheduleService;
     }
 
     @GetMapping("/main")
-    public String mainTimeTable(@RequestParam(required = false, defaultValue = "") String team,
-                                Model model, @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<Schedule> page;
-        if (team != null && !team.isEmpty()) {
-            page = postRepository.findByTeam(team, pageable);
-        } else {
-            page = postRepository.findAll(pageable);
-        }
+    public String mainTable(@RequestParam(required = false, defaultValue = "") String team,
+                            Model model, @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<Schedule> page = scheduleService.findAll(pageable,team);
         model.addAttribute("page", page);
         model.addAttribute("team", team);
 
@@ -58,63 +57,46 @@ public class MainController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/main/add")
-    public String mainAdd(Schedule schedule, Model model) {
-        return "main-add";
-    }
-
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("/main/add")
-    public String mainPostAdd(@AuthenticationPrincipal User user, Schedule schedule, BindingResult bindingResult, Model model) {
-        schedule.setAuthor(user);
-
-        if (bindingResult.hasErrors()) {
-
-            model.addAttribute("post", schedule);
-            return "main-add";
-        } else {
-            model.addAttribute("post", null);
-            postRepository.save(schedule);
-        }
-        return "redirect:/main";
-    }
-
-    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/main/{id}/remove")
-    public String blogPostDelete(@AuthenticationPrincipal User currentUser, @PathVariable(value = "id") Long id, Model model) {
-        Schedule schedule = postRepository.findById(id).orElseThrow();
+    public String blogScheduleDelete(@AuthenticationPrincipal User currentUser, @PathVariable(value = "id") Long id, Model model) {
+        Schedule schedule = scheduleService.findById(id);
         if (schedule.getAuthor().getUsername().equals(currentUser.getUsername())) {
-            postRepository.delete(schedule);
+            scheduleService.delete(schedule);
         }
         return "redirect:/main";
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/main/download")
-    public String downloadScheduleForm(Model model) {
-        return "download-files";
+    @GetMapping("/main/upload")
+    public String uploadScheduleForm(Model model) {
+        return "upload-files";
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("/main/download")
-    public String downloadSchedule(@AuthenticationPrincipal User user, @RequestParam("file") MultipartFile file) throws IOException, ParseException {
-        if (!file.isEmpty()) {
-
+    @PostMapping("/main/upload")
+    public String uploadSchedule(@AuthenticationPrincipal User user, @RequestParam("file") MultipartFile file) throws IOException, ParseException {
+        if (!file.isEmpty() && !Objects.requireNonNull(file.getOriginalFilename()).isEmpty()) {
             File uploadDir = new File(uploadPath);
-
+            File errorsDir = new File(errorsPath);
             if (!uploadDir.exists()) {
                 uploadDir.mkdir();
             }
+            if (!errorsDir.exists()){
+                errorsDir.mkdir();
+            }
 
             String uuidFile = UUID.randomUUID().toString();
-            String resultFilename = uuidFile + "." + file.getOriginalFilename();
-            String pathname = uploadPath + "/" + resultFilename;
+            String resultUploadFilename = uuidFile + "." + file.getOriginalFilename();
+            String resultErrorFilename = uuidFile +".error_file.txt";
+            String uploadFilePathname = uploadPath + "/" + resultUploadFilename;
+            String fileWithErrorsInfoPathname = errorsPath + "/" + resultErrorFilename;
 
-            file.transferTo(new File(pathname));
-
-            ExcelWorker.readExcelFile(user, pathname);
+            file.transferTo(new File(uploadFilePathname));
+            List<Schedule> scheduleListFromDb = scheduleService.findAllByAuthor(user);
+            List<Schedule> scheduleListForAddIntoDb = new ArrayList<>();
+            Set<String> someErrors= ExcelWorker.readExcelFile(scheduleListFromDb, scheduleListForAddIntoDb,user, uploadFilePathname, fileWithErrorsInfoPathname);
         }
 
-        return "download-files";
+        return "upload-files";
     }
 }

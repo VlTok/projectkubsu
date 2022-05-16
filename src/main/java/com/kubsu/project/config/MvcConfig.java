@@ -16,6 +16,9 @@ public class MvcConfig implements WebMvcConfigurer {
     @Value("${upload.path}")
     private String uploadPath;
 
+    @Value("${errors.path}")
+    private String errorsPath;
+
     @Bean
     public RestTemplate getRestTemplate() {
         return new RestTemplate();
@@ -31,6 +34,8 @@ public class MvcConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/static/");
         registry.addResourceHandler("/excel/**")
                 .addResourceLocations("file://" + uploadPath + "/");
+        registry.addResourceHandler("/file_with_errors/**")
+                .addResourceLocations("file://" + errorsPath + "/");
     }
 
     @Override

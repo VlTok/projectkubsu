@@ -10,7 +10,6 @@ import java.util.Date;
 @Table(name = "k_couple")
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Builder
 @Getter
 @Setter
