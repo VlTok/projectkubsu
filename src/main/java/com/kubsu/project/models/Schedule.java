@@ -5,6 +5,7 @@ import org.jetbrains.annotations.*;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "k_schedule")
@@ -20,7 +21,7 @@ public class Schedule {
     @Column(name = "s_id")
     private Long id;
 
-    @OneToMany(mappedBy = "schedule")
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @ToString.Exclude
     private List<Couple> couples;
 
@@ -39,4 +40,17 @@ public class Schedule {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "s_author_id")
     private User author;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Schedule schedule = (Schedule) o;
+        return Objects.equals(id, schedule.id) && Objects.equals(couples, schedule.couples) && dayOfWeek.equals(schedule.dayOfWeek) && team.equals(schedule.team) && parity.equals(schedule.parity) && Objects.equals(author, schedule.author);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, couples, dayOfWeek, team, parity, author);
+    }
 }

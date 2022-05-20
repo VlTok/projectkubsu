@@ -5,6 +5,7 @@ import org.jetbrains.annotations.*;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "k_couple")
@@ -40,4 +41,17 @@ public class Couple {
     @ManyToOne
     @JoinColumn(name = "c_schedule_id")
     private Schedule schedule;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Couple couple = (Couple) o;
+        return Objects.equals(id, couple.id) && title.equals(couple.title) && Objects.equals(type, couple.type) && Objects.equals(audience, couple.audience) && timeCouple.equals(couple.timeCouple) && Objects.equals(teacher, couple.teacher) && Objects.equals(schedule, couple.schedule);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, type, audience, timeCouple, teacher, schedule);
+    }
 }

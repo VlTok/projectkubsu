@@ -34,7 +34,7 @@ body{
 }
 .navbar-brand{
     color: #FFFFFF !important;
-    font-size: 14pt !important;
+    font-size: 20pt !important;
 }
 @media (max-width: 1200px){
     .navbar-brand{
@@ -69,6 +69,11 @@ body{
     background-color: #168FE0;
     border-color: #FFFFFF !important;
 }
+
+.my-btn-size{
+    width: 50%;
+}
+
 .my-btn:hover{
     color: #168FE0;
     background-color: #FFFFFF;
@@ -80,6 +85,9 @@ body{
 .my-margin-bottom{
     margin-bottom: 80px;
 }
+.my-margin-bottom-2{
+    margin-bottom: 40px;
+}
 .my-margin-top{
     margin-top: 230px;
 }
@@ -89,4 +97,9 @@ body{
 .turbolinks-progress-bar{
     height: 5px;
     background-color: #168FE0;
+}
+
+.my-dropdown{
+    height: 200px;
+    overflow-y: scroll;
 }
