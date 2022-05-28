@@ -16,14 +16,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
 import java.util.*;
 
@@ -53,7 +49,6 @@ public class MainController {
                             @PageableDefault(sort = {"id"}, direction = Sort.Direction.ASC) Pageable pageable,
                             Model model) {
 
-        /*Set<String> groups = scheduleService.findAllByGroups();*/
         Page<Schedule> page = scheduleService.findAll(nonNull(team)? team.trim() : null,
                 nonNull(teacher)? teacher.trim() : null,
                 nonNull(dayOfWeek) ? dayOfWeek.trim() : null, pageable);
@@ -77,12 +72,42 @@ public class MainController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("/main/{id}/remove")
+    @PostMapping("/main/{id}/remove-schedule")
     public String blogScheduleDelete(@AuthenticationPrincipal User currentUser, @PathVariable(value = "id") Long id, Model model) {
         Schedule schedule = scheduleService.findById(id);
         if (schedule.getAuthor().getUsername().equals(currentUser.getUsername())) {
             scheduleService.delete(schedule);
         }
+        model.addAttribute("messageType","success");
+        model.addAttribute("message","Расписание успешно удалено!");
+        return "redirect:/main";
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/main/remove-schedules-by-team")
+    public String blogScheduleDeleteByTeam(@AuthenticationPrincipal User currentUser, @RequestParam(name = "group") String team, Model model) {
+        List<Schedule> scheduleList = scheduleService.findByTeam(team);
+        for (Schedule schedule: scheduleList) {
+            if (schedule.getAuthor().getUsername().equals(currentUser.getUsername())) {
+                scheduleService.delete(schedule);
+            }
+        }
+        model.addAttribute("messageType","success");
+        model.addAttribute("message","Расписание группы "+team+" успешно удалено!");
+        return "redirect:/main";
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/main/remove-schedules-by-author")
+    public String blogScheduleDeleteByAuthor(@AuthenticationPrincipal User currentUser, Model model) {
+        List<Schedule> scheduleList = scheduleService.findAllByAuthor(currentUser);
+        for (Schedule schedule: scheduleList) {
+            if (schedule.getAuthor().getUsername().equals(currentUser.getUsername())) {
+                scheduleService.delete(schedule);
+            }
+        }
+        model.addAttribute("messageType","success");
+        model.addAttribute("message","Расписание добавленное "+currentUser.getUsername()+" успешно удалено!");
         return "redirect:/main";
     }
 
@@ -94,7 +119,8 @@ public class MainController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/main/upload")
-    public String uploadSchedule(@AuthenticationPrincipal User user, @RequestParam("file") MultipartFile file) throws IOException, ParseException {
+    public String uploadSchedule(@AuthenticationPrincipal User user, @RequestParam("file") MultipartFile file,
+                                 Model model) throws IOException, ParseException {
         if (!file.isEmpty() && !Objects.requireNonNull(file.getOriginalFilename()).isEmpty()) {
             File uploadDir = new File(uploadPath);
             File errorsDir = new File(errorsPath);
@@ -106,8 +132,8 @@ public class MainController {
             }
 
             String uuidFile = UUID.randomUUID().toString();
-            String resultUploadFilename = uuidFile + "." + file.getOriginalFilename();
-            String resultErrorFilename = uuidFile +".error_file.txt";
+            String resultUploadFilename = uuidFile + "_" + file.getOriginalFilename();
+            String resultErrorFilename = uuidFile +"_error_file.txt";
             String uploadFilePathname = uploadPath + "/" + resultUploadFilename;
             String fileWithErrorsInfoPathname = errorsPath + "/" + resultErrorFilename;
 
@@ -117,12 +143,21 @@ public class MainController {
             Set<String> someErrors= ExcelWorker.readExcelFile(scheduleListFromDb, scheduleListForAddIntoDb,user, uploadFilePathname, fileWithErrorsInfoPathname);
             if (someErrors.size()==0){
                 for (Schedule schedule: scheduleListForAddIntoDb) {
+                    schedule.setFilenameWithErrors(resultErrorFilename);
+                    schedule.setFilenameWithExcel(resultUploadFilename);
                     Schedule saveSchedule = scheduleService.addSchedule(schedule);
                     for (Couple couple: schedule.getCouples()){
                         couple.setSchedule(saveSchedule);
                         coupleService.addCouple(couple);
                     }
                 }
+                model.addAttribute("messageType","success");
+                model.addAttribute("message","Расписание успешно добавлено!");
+            }else {
+                model.addAttribute("messageType","danger");
+                model.addAttribute("message","Были найдены ошибки!");
+                model.addAttribute("resultUploadFilename", resultUploadFilename);
+                model.addAttribute("resultErrorFilename", resultErrorFilename);
             }
         }
 

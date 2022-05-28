@@ -5,26 +5,27 @@
 <body>
 <header th:insert="blocks/header :: header"></header>
 <div class="container">
-    <h2 th:text="'Изменение профиля пользователя: '+${usernamePresent}"></h2>
-    <div class="alert alert-danger" th:if="${not #lists.isEmpty(passwordError)}">
-        <b th:text="${passwordError}"></b>
+    <div class="mb-4 ml-3">
+        <h2 th:text="'Изменение профиля пользователя для '+${usernamePresent}"></h2>
+        <div class="alert alert-danger" th:if="${not #lists.isEmpty(passwordError)}">
+            <b th:text="${passwordError}"></b>
+        </div>
+        <div class="alert alert-danger" th:if="${not #lists.isEmpty(usernameError)}">
+            <b th:text="${usernameError}"></b>
+        </div>
     </div>
-    <div class="alert alert-danger" th:if="${not #lists.isEmpty(usernameError)}">
-        <b th:text="${usernameError}"></b>
-    </div>
-    <h5 th:text="'Текущая электронная почта: '+${emailPresent}"></h5>
     <form method="post" th:object="${user}">
         <div class="form-group">
             <label class="col-sm-2 col-form-label"> Электронная почта:</label>
             <div class="col-sm-6">
-                <input th:class="${#fields.hasErrors('email')} ? 'form-control is-invalid' : 'form-control'" type="text" name="email" th:field="*{email}" th:value="*{email}" placeholder="Электронная почта"/>
+                <input th:class="${#fields.hasErrors('email')} ? 'form-control is-invalid' : 'form-control'" type="text" name="email" th:field="*{email}" th:value="*{email}" th:placeholder="${emailPresent}"/>
                 <b th:if="${#fields.hasErrors('email')}" th:class="${#fields.hasErrors('email')} ? 'invalid-feedback':''" th:errors="*{email}">Email error</b>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-2 col-form-label"> Имя пользователя:</label>
             <div class="col-sm-6">
-                <input th:class="${#fields.hasErrors('username')} ? 'form-control is-invalid' : 'form-control'" type="text" name="username" th:field="*{username}" th:value="*{username}" placeholder="Логин"/>
+                <input th:class="${#fields.hasErrors('username')} ? 'form-control is-invalid' : 'form-control'" type="text" name="username" th:field="*{username}" th:value="*{username}" th:placeholder="${usernamePresent}" />
                 <b th:if="${#fields.hasErrors('username')}" th:class="${#fields.hasErrors('username')} ? 'invalid-feedback':''" th:errors="*{username}">Username error</b>
             </div>
         </div>
@@ -45,7 +46,9 @@
             </div>
         </div>
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-        <button type="submit" class="btn my-btn">Сохранить</button>
+        <div class="ml-3 mt-4">
+            <button type="submit" class="btn my-btn">Сохранить</button>
+        </div>
     </form>
 </div>
 <div th:insert="blocks/footer :: footer"></div>

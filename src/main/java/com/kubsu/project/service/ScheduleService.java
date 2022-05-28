@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Objects.nonNull;
@@ -65,11 +66,20 @@ public class ScheduleService {
         return scheduleRepository.findById(id).orElseThrow();
     }
 
+    public List<Schedule> findByTeam(String team) {
+        return scheduleRepository.findByTeam(team.trim());
+    }
+
     public Schedule addSchedule(Schedule schedule){
         return scheduleRepository.save(schedule);
+    }
+
+    public boolean existsSchedule(Long id){
+        return scheduleRepository.existsById(id);
     }
 
     public void delete(Schedule schedule){
         scheduleRepository.delete(schedule);
     }
+
 }

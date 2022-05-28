@@ -5,10 +5,21 @@
 <body>
     <header th:insert="blocks/header :: header"></header>
     <div class="container">
+        <div th:if="${not #lists.isEmpty(message)}">
+            <div th:class="'alert alert-'+${messageType}">
+                <b th:text="${message}"></b>
+            </div>
+        </div>
+        <div sec:authorize="hasAuthority('ADMIN')" class="mb-4">
+            <form th:action="'/main/remove-schedules-by-author'" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button class="btn btn-danger">Удалить всё добавленное вами расписание</button>
+            </form>
+        </div>
         <div class="form-row">
             <div class="form-group col-md-12 col-lg-10">
                 <form method="get" th:action="@{/main}" class="form-inline">
-                    <label>
+                    <label class="mr-2">
                         <select name="team" id="team" class="form-control">
                             <option selected disabled>Выберите группу</option>
                             <label th:each="el : ${teams}">
@@ -16,7 +27,7 @@
                             </label>
                         </select>
                     </label>
-                    <label>
+                    <label class="mr-2">
                         <select name="teacher" id="teacher" class="form-control">
                             <option selected disabled>Выберите преподавателя</option>
                             <label th:each="el : ${teachers}">
@@ -24,7 +35,7 @@
                             </label>
                         </select>
                     </label>
-                    <label>
+                    <label class="mr-2">
                         <select name="dayOfWeek" id="dayOfWeek" class="form-control">
                             <option selected disabled>Выберите день недели</option>
                             <label>
@@ -93,10 +104,20 @@
                 </tbody>
             </table>
         </div>
-        <div sec:authorize="hasAuthority('ADMIN')" class="form-group col-md-6">
-            <form th:action="'/main/'+ ${el.id} + '/remove'" method="post">
-                <button class="btn btn-danger">Удалить</button>
-            </form>
+        <div class="form-row">
+            <div sec:authorize="hasAuthority('ADMIN')" class="form-group col-md-2">
+                <form th:action="'/main/'+ ${el.id} + '/remove-schedule'" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button class="btn btn-danger">Удалить</button>
+                </form>
+            </div>
+            <div sec:authorize="hasAuthority('ADMIN')" class="form-group col-md-6">
+                <form th:action="'/main/remove-schedules-by-team'" method="post">
+                    <input type="hidden" name="group" th:value="${el.team}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button class="btn btn-danger">Удалить всё расписание для группы <span th:text="${el.team}"></span></button>
+                </form>
+            </div>
         </div>
     </div>
     <div class="container">

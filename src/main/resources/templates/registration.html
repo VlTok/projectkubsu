@@ -5,7 +5,7 @@
 <body>
     <header th:insert="blocks/header :: header"></header>
     <div class="container">
-        <h2>Регистрация</h2>
+        <h2 class="ml-3">Регистрация</h2>
         <div class="alert alert-danger" th:if="${not #lists.isEmpty(passwordError)}">
             <b th:text="${passwordError}"></b>
         </div>

@@ -51,9 +51,11 @@
                     </div>
                 </div>
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                <button type="submit" class="btn my-btn">Зарегистрироваться</button>
+                <div class="ml-3">
+                    <button type="submit" class="btn my-btn">Зарегистрироваться</button>
+                </div>
             </div>
-            <div th:if="${path}=='/login'">
+            <div class="ml-3" th:if="${path}=='/login'">
                 <button type="submit" class="btn my-btn mb-1">Авторизоваться</button>
             </div>
         </form>

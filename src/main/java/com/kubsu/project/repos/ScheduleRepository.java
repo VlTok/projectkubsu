@@ -30,4 +30,5 @@ public interface ScheduleRepository extends CrudRepository<Schedule, Long> {
     Page<Schedule> findAll(Pageable pageable);
     @Query("select schedule.team from Schedule as schedule")
     List<String> findAllTeam();
+    List<Schedule> findByTeam(String team);
 }

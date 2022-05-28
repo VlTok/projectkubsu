@@ -41,6 +41,12 @@ public class Schedule {
     @JoinColumn(name = "s_author_id")
     private User author;
 
+    @Column(name = "s_filename_excel")
+    private String filenameWithExcel;
+
+    @Column(name = "s_filename_errors")
+    private String filenameWithErrors;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -5,7 +5,19 @@
 <body>
 <header th:insert="blocks/header :: header"></header>
 <div class="container">
-    <h2 class="my-margin-bottom-2">Загрузка расписания из файла </h2>
+    <div th:if="${not #lists.isEmpty(message)}">
+        <div th:if="${messageType}=='success'">
+            <div th:class="'alert alert-'+${messageType}">
+                <b th:text="${message}"></b>
+            </div>
+        </div>
+        <div th:if="${messageType}=='danger'">
+            <div th:class="'alert alert-'+${messageType}">
+                <b th:text="${message}"></b>
+            </div>
+        </div>
+    </div>
+    <h2 class="my-margin-bottom-2 col-sm-6">Загрузка расписания из файла </h2>
     <form th:action="@{/main/upload}" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <div class="col-sm-6 mb-3">
@@ -17,6 +29,14 @@
         </div>
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
     </form>
+    <div th:if="${messageType}=='danger'" class="col-sm-6">
+        <div>
+            <a th:download="${resultUploadFilename}" th:href="'/excel/'+${resultUploadFilename}">Выгрузить excel файл с ошибками</a>
+        </div>
+        <div>
+            <a th:download="${resultErrorFilename}" th:href="'/file_with_errors_info/'+${resultErrorFilename}">Выгрузить txt файл с ошибками и дополнительной информацией</a>
+        </div>
+    </div>
 </div>
 <div th:insert="blocks/footer :: footer"></div>
 </body>

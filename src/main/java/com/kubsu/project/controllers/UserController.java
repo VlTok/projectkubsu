@@ -4,6 +4,7 @@ import com.kubsu.project.models.Role;
 import com.kubsu.project.models.User;
 import com.kubsu.project.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.*;
 import java.util.Map;
+import java.util.Objects;
+
+import static java.util.Objects.nonNull;
 
 @Controller
 @RequestMapping("/user")
@@ -57,18 +61,20 @@ public class UserController {
     }
 
     @PostMapping("profile")
-    public String updateProfile(@AuthenticationPrincipal User userPresent, @RequestParam("password2") String passwordConfirm,@Valid User user
-                                , BindingResult bindingResult,
-                                Model model){
-        ControllerUtils controllerUtils=new ControllerUtils();
+    public String updateProfile(@AuthenticationPrincipal User userPresent, @RequestParam("password2") String passwordConfirm, @Valid User user,
+                                BindingResult bindingResult, Model model){
+        model.addAttribute("usernamePresent", userPresent.getUsername());
+        model.addAttribute("emailPresent", userPresent.getEmail());
 
+        ControllerUtils controllerUtils=new ControllerUtils();
         boolean isConfirmEmpty = controllerUtils.isConfirmEmptyAndPasswordError(passwordConfirm, user, model);
-        if(isConfirmEmpty || bindingResult.hasErrors()){
+        if((isConfirmEmpty || bindingResult.hasErrors())){
             return "user-profile";
         }
 
         boolean userExists= userService.existsUser(user);
-        if (!userExists){
+        boolean equalsUsername = userPresent.getUsername().trim().equals(user.getUsername().trim());
+        if (userExists && !equalsUsername){
             model.addAttribute("usernameError", "Такое имя пользователя уже существует!");
             return "user-profile";
         }

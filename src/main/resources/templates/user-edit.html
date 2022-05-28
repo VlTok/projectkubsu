@@ -5,7 +5,7 @@
 <body>
 <header th:insert="blocks/header :: header"></header>
 <div class="container">
-    <h2>Редактор пользователей</h2>
+    <h2 class="my-margin-bottom-2">Редактор пользователей</h2>
     <form th:action="@{/user}" method="post">
         <input type="text" name="username" th:value="${user.username}">
         <div th:each="role : ${roles}">

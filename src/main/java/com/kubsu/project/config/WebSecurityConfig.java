@@ -25,7 +25,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                    .antMatchers("/","/registration","/recover","/static/**","/activate/*").permitAll()
+                    .antMatchers("/","/registration","/recover","/static/**","/activate/*","/excel/**").permitAll()
                     .anyRequest().authenticated()
                 .and()
                     .formLogin()
@@ -34,11 +34,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .logout()
                     .permitAll();
-    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService)
-                .passwordEncoder(passwordEncoder);
     }
 }

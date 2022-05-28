@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
+
     private final UserRepository userRepository;
     private final MailSender mailSender;
     private final PasswordEncoder passwordEncoder;
@@ -53,7 +54,7 @@ public class UserService implements UserDetailsService {
 
     public boolean addUser(User user) {
 
-        if (!existsUser(user)){
+        if (existsUser(user)){
              return false;
         }
         user.setActive(false);
@@ -82,10 +83,10 @@ public class UserService implements UserDetailsService {
         User userFromDb = userRepository.findByUsername(user.getUsername());
 
         if (userFromDb!=null){
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     public boolean activateUser(String code) {

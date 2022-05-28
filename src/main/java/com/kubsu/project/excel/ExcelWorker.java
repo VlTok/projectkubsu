@@ -8,6 +8,7 @@ import com.kubsu.project.models.User;
 import com.kubsu.project.models.dto.CoupleDto;
 import com.kubsu.project.models.dto.ScheduleDto;
 import lombok.Getter;
+import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -26,14 +27,15 @@ public class ExcelWorker {
 
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("h:mm a");
     private static final String SPECIAL_CASE = "Элективные дисциплины по физической культуре и спорту";
-    private static final String SPECIAL_TYPE = "лекция";
+    private static final String SPECIAL_TYPE_1 = "лекция";
+    private static final String SPECIAL_TYPE_2 = "п/з";
     private static final int COLUMN_WITH_TIME = 1;
     private static final int COLUMN_WITH_DAY_OF_WEEK = 0;
     private static final int ROW_WITH_GROUPS = 1;
     private static final int ROW_WITH_PARITY = 0;
     private static final int COLUMN_WITH_PARITY = 2;
     private static final int INFO_ABOUT_COUPLE_ITERATOR = 5;
-    private static final int INFO_ABOUT_SCHEDULE_ITERATOR = 28;
+    private static final int INFO_ABOUT_SCHEDULE_ITERATOR = 32;
 
     private static final CoupleDto coupleDto = new CoupleDto();
     private static final CellReferenceInfo cellReferenceInfo = new CellReferenceInfo();
@@ -47,6 +49,7 @@ public class ExcelWorker {
         int sheetIterator = 0;
         while (sheetIterator < 2) {
             FileInputStream inputStream = new FileInputStream(file);
+            ZipSecureFile.setMinInflateRatio(0);
             XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
             XSSFSheet sheet = workbook.getSheetAt(sheetIterator);
             int rowEnd = sheet.getLastRowNum()+51;
@@ -260,6 +263,7 @@ public class ExcelWorker {
     private static boolean findErrorsIntoExcel(List<CellReferenceInfo> cellReferenceInfoList, Map<CellReferenceInfo, ExcelCoupleInfo> excelCoupleInfoMap, File file, Set<String> errorsInfo, int sheetIterator) throws IOException {
         boolean haveErrors = false;
         FileInputStream inputStream = new FileInputStream(file);
+        ZipSecureFile.setMinInflateRatio(0);
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
         XSSFSheet sheet = workbook.getSheetAt(sheetIterator);
         for (int i = 0; i < cellReferenceInfoList.size(); i++) {
@@ -292,7 +296,7 @@ public class ExcelWorker {
         style.setFillBackgroundColor(IndexedColors.RED.getIndex());
         style.setFillPattern(FillPatternType.LEAST_DOTS);
         if (isHaveEqualsDayOfWeekAndTimeCoupleAndAudienceAndParity(excelCoupleInfo1, excelCoupleInfo2)) {
-            if (isSameLecture(excelCoupleInfo1, excelCoupleInfo2)) {
+            if (isLectures(excelCoupleInfo1, excelCoupleInfo2) || isPractices(excelCoupleInfo1, excelCoupleInfo2)) {
                 return haveErrors;
             } else if (isLecture(excelCoupleInfo1)) {
                 setStyleForCellsWithError(sheet, style, referenceInfo2, errorsInfo);
@@ -391,23 +395,44 @@ public class ExcelWorker {
         style.setFillBackgroundColor(IndexedColors.YELLOW.getIndex());
         style.setFillPattern(FillPatternType.LEAST_DOTS);
         if (isHaveEqualsDayOfWeekAndTimeCoupleAndAudienceAndParity(coupleInfoFromDb, excelCoupleInfo)) {
-            setStyleForCellsWithErrorForSecondStep(sheet, style, referenceInfo, errorsInfo);
+            if (isLectures(coupleInfoFromDb,excelCoupleInfo)||isPractices(coupleInfoFromDb,excelCoupleInfo)){
+                if (isSameGroup(coupleInfoFromDb,excelCoupleInfo)){
+                    setStyleForCellsWithErrorForSecondStep(sheet, style, referenceInfo, errorsInfo,coupleInfoFromDb);
+                    return true;
+                }else {
+                    return haveErrors;
+                }
+            }
+            setStyleForCellsWithErrorForSecondStep(sheet, style, referenceInfo, errorsInfo, coupleInfoFromDb);
             return true;
         }
         return haveErrors;
     }
 
-    private static void setStyleForCellsWithErrorForSecondStep(XSSFSheet sheet, CellStyle style, CellReferenceInfo referenceInfo, Set<String> errorsInfo) {
+    private static void setStyleForCellsWithErrorForSecondStep(XSSFSheet sheet, CellStyle style, CellReferenceInfo referenceInfo, Set<String> errorsInfo, ExcelCoupleInfo coupleInfo) {
         getCellsWithError(sheet, style, referenceInfo.getCellTitleReference());
         getCellsWithError(sheet, style, referenceInfo.getCellTeacherReference());
         getCellsWithError(sheet, style, referenceInfo.getCellTypeReference());
         getCellsWithError(sheet, style, referenceInfo.getCellAudienceReference());
-        String error = String.format("При выполнении второго этапа проверки в ячейках: %s %s %s %s обнаружена ошибка в аудитории. Так как в базеданных найдена такая же пара со временем и днем недели",
+        String error = String.format("При выполнении второго этапа проверки в ячейках: %s %s %s %s обнаружена ошибка в аудитории. В веб-интерфейсе есть похожая пара: %s %s %s %s %s для группы %s и день недели %s %s",
                 referenceInfo.getCellTitleReference().formatAsString(),
                 referenceInfo.getCellTeacherReference().formatAsString(),
                 referenceInfo.getCellTypeReference().formatAsString(),
-                referenceInfo.getCellAudienceReference().formatAsString());
+                referenceInfo.getCellAudienceReference().formatAsString(),
+                coupleInfo.getTitle(),
+                coupleInfo.getTeacher(),
+                coupleInfo.getType(),
+                coupleInfo.getTimeCouple(),
+                coupleInfo.getAudience(),
+                coupleInfo.getTeam(),
+                coupleInfo.getDayOfWeek(),
+                coupleInfo.getParity()
+                );
         errorsInfo.add(error);
+    }
+
+    private static boolean isSameGroup(ExcelCoupleInfo excelCoupleInfo1, ExcelCoupleInfo excelCoupleInfo2){
+        return excelCoupleInfo1.getTeam().equals(excelCoupleInfo2.getTeam());
     }
 
     private static boolean isHaveEqualsDayOfWeekAndTimeCoupleAndAudienceAndParity(ExcelCoupleInfo excelCoupleInfo1, ExcelCoupleInfo excelCoupleInfo2) {
@@ -417,17 +442,23 @@ public class ExcelWorker {
                 excelCoupleInfo1.getParity().equals(excelCoupleInfo2.getParity());
     }
 
-    private static boolean isSameLecture(ExcelCoupleInfo excelCoupleInfo1, ExcelCoupleInfo excelCoupleInfo2) {
-        return excelCoupleInfo1.getTitle().equals(excelCoupleInfo2.getTitle()) &&
-                excelCoupleInfo1.getType().equals(excelCoupleInfo2.getType()) &&
+    private static boolean isLectures(ExcelCoupleInfo excelCoupleInfo1, ExcelCoupleInfo excelCoupleInfo2) {
+        return excelCoupleInfo1.getType().equals(excelCoupleInfo2.getType()) &&
                 excelCoupleInfo1.getTeacher().equals(excelCoupleInfo2.getTeacher()) &&
-                (excelCoupleInfo1.getType().trim().equals(SPECIAL_TYPE.trim()) || excelCoupleInfo1.getType().trim().equalsIgnoreCase(SPECIAL_TYPE.trim())) &&
-                (excelCoupleInfo2.getType().trim().equals(SPECIAL_TYPE.trim()) || excelCoupleInfo2.getType().trim().equalsIgnoreCase(SPECIAL_TYPE.trim()));
+                (excelCoupleInfo1.getType().trim().equals(SPECIAL_TYPE_1.trim()) || excelCoupleInfo1.getType().trim().equalsIgnoreCase(SPECIAL_TYPE_1.trim())) &&
+                (excelCoupleInfo2.getType().trim().equals(SPECIAL_TYPE_1.trim()) || excelCoupleInfo2.getType().trim().equalsIgnoreCase(SPECIAL_TYPE_1.trim()));
+    }
+
+    private static boolean isPractices(ExcelCoupleInfo excelCoupleInfo1, ExcelCoupleInfo excelCoupleInfo2){
+        return excelCoupleInfo1.getType().equals(excelCoupleInfo2.getType()) &&
+                excelCoupleInfo1.getTeacher().equals(excelCoupleInfo2.getTeacher()) &&
+                (excelCoupleInfo1.getType().trim().equals(SPECIAL_TYPE_2.trim()) || excelCoupleInfo1.getType().trim().equalsIgnoreCase(SPECIAL_TYPE_2.trim())) &&
+                (excelCoupleInfo2.getType().trim().equals(SPECIAL_TYPE_2.trim()) || excelCoupleInfo2.getType().trim().equalsIgnoreCase(SPECIAL_TYPE_2.trim()));
     }
 
     private static boolean isLecture(ExcelCoupleInfo excelCoupleInfo) {
-        return excelCoupleInfo.getType().trim().equals(SPECIAL_TYPE.trim()) ||
-                excelCoupleInfo.getType().trim().equalsIgnoreCase(SPECIAL_TYPE.trim());
+        return excelCoupleInfo.getType().trim().equals(SPECIAL_TYPE_1.trim()) ||
+                excelCoupleInfo.getType().trim().equalsIgnoreCase(SPECIAL_TYPE_1.trim());
     }
 
     private static boolean isPhysicalEducation(ExcelCoupleInfo excelCoupleInfo) {

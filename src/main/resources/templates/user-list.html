@@ -6,24 +6,26 @@
 <header th:insert="blocks/header :: header"></header>
 <div class="container">
     <h2 class="my-margin-bottom-2">Список пользователей</h2>
-    <table class="table table-sm table-hover col-lg-8 col-md-8 col-sm-12">
-        <thead>
-        <tr>
-            <th scope="col">Имя</th>
-            <th scope="col">Роль</th>
-            <th scope="col">#</th>
-            <th scope="col">#</th>
-            <th scope="col">#</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="el : ${users}">
-            <td><b th:text="${el.username}"></b></td>
-            <td th:each="role : ${el.roles}"><b th:text="${role}"></b></td>
-            <td><a th:href="'/user/' + ${el.id}">edit</a></td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="table-responsive-md">
+        <table class="table table-hover table-striped table-bordered col-lg-8 col-md-8 col-sm-12">
+            <thead>
+            <tr>
+                <th scope="col">Имя</th>
+                <th scope="col">Роль</th>
+                <th scope="col">#</th>
+                <th scope="col">#</th>
+                <th scope="col">#</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="el : ${users}">
+                <td><b th:text="${el.username}"></b></td>
+                <td th:each="role : ${el.roles}"><b th:text="${role}"></b></td>
+                <td><a th:href="'/user/' + ${el.id}">Изменить</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 <div th:insert="blocks/footer :: footer"></div>
 </body>

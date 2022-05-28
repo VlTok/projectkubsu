@@ -70,6 +70,10 @@ body{
     border-color: #FFFFFF !important;
 }
 
+.my_color{
+    color: #168FE0;
+}
+
 .my-btn-size{
     width: 50%;
 }
