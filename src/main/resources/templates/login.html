@@ -6,10 +6,10 @@
 <header th:insert="blocks/header :: header"></header>
 <div class="container">
     <h2 class="ml-3">Авторизация</h2>
-    <div th:class="'alert alert-'+${messageType}">
+    <div th:class="'col-sm-6 alert alert-'+${messageType}">
         <b th:text="${message}"></b>
     </div>
-    <div th:if="${param.error}" class="alert alert-danger">
+    <div th:if="${param.error}" class="col-sm-6 alert alert-danger">
         <b>Неправильный логин или пароль! Проверьте, активировали ли вы свой аккаунт!</b>
     </div>
     <div th:insert="blocks/login :: login(path=@{/login},user=null,password2=null,captchaError=null)" ></div>

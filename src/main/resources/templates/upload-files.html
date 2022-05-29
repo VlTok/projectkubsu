@@ -7,12 +7,12 @@
 <div class="container">
     <div th:if="${not #lists.isEmpty(message)}">
         <div th:if="${messageType}=='success'">
-            <div th:class="'alert alert-'+${messageType}">
+            <div th:class="'col-sm-6 alert alert-'+${messageType}">
                 <b th:text="${message}"></b>
             </div>
         </div>
         <div th:if="${messageType}=='danger'">
-            <div th:class="'alert alert-'+${messageType}">
+            <div th:class="'col-sm-6 alert alert-'+${messageType}">
                 <b th:text="${message}"></b>
             </div>
         </div>

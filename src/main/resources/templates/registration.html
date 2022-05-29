@@ -6,10 +6,10 @@
     <header th:insert="blocks/header :: header"></header>
     <div class="container">
         <h2 class="ml-3">Регистрация</h2>
-        <div class="alert alert-danger" th:if="${not #lists.isEmpty(passwordError)}">
+        <div class="col-sm-6 alert alert-danger" th:if="${not #lists.isEmpty(passwordError)}">
             <b th:text="${passwordError}"></b>
         </div>
-        <div class="alert alert-danger" th:if="${not #lists.isEmpty(usernameError)}">
+        <div class="col-sm-6 alert alert-danger" th:if="${not #lists.isEmpty(usernameError)}">
             <b th:text="${usernameError}"></b>
         </div>
         <div th:insert="blocks/login :: login(path=@{/registration},user=${user},password2=${password2Error},captchaError=${captchaError})" ></div>
