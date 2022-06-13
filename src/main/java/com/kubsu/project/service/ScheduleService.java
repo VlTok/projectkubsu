@@ -1,9 +1,7 @@
 package com.kubsu.project.service;
 
-import com.kubsu.project.models.Couple;
 import com.kubsu.project.models.Schedule;
 import com.kubsu.project.models.User;
-import com.kubsu.project.repos.CoupleRepository;
 import com.kubsu.project.repos.ScheduleRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Objects.nonNull;
@@ -25,28 +22,42 @@ public class ScheduleService {
         this.scheduleRepository = scheduleRepository;
     }
 
-    public Page<Schedule> findAll(String team, String teacher, String dayOfWeek, Pageable pageable) {
+    public Page<Schedule> findAll(String team, String teacher, String dayOfWeek, String title, Pageable pageable) {
         Page<Schedule> schedules;
-        if (nonNull(team)&&!team.isEmpty()&&nonNull(teacher)&&!teacher.isEmpty()&&nonNull(dayOfWeek)&&!dayOfWeek.isEmpty()){
-            schedules = scheduleRepository.findAllByTeamAndTeacherAndDayOfWeek(team,teacher,dayOfWeek, pageable);
-        }
-        else if (nonNull(team)&&!team.isEmpty()&&nonNull(dayOfWeek)&&!dayOfWeek.isEmpty()){
-            schedules = scheduleRepository.findAllByTeamAndDayOfWeek(team,dayOfWeek, pageable);
-        }
-        else if (nonNull(dayOfWeek)&&!dayOfWeek.isEmpty()&&nonNull(teacher)&&!teacher.isEmpty()){
-            schedules = scheduleRepository.findAllByDayOfWeekAndTeacher(dayOfWeek,teacher, pageable);
-        }
-        else if (nonNull(team)&&!team.isEmpty()&&nonNull(teacher)&&!teacher.isEmpty()){
-            schedules = scheduleRepository.findAllByTeamAndTeacher(team,teacher, pageable);
-        }
-        else if (nonNull(dayOfWeek)&&!dayOfWeek.isEmpty()){
+        boolean nonNullTeam = nonNull(team) && !team.isEmpty();
+        boolean nonNullTeacher = nonNull(teacher) && !teacher.isEmpty();
+        boolean nonNullDayOfWeek = nonNull(dayOfWeek) && !dayOfWeek.isEmpty();
+        boolean nonNullTitle = nonNull(title) && !title.isEmpty();
+        if (nonNullTitle && nonNullTeacher && nonNullDayOfWeek && nonNullTeam) {
+            schedules = scheduleRepository.findAllByTeamAndTeacherAndDayOfWeekAndTitle(team, teacher, dayOfWeek, title, pageable);
+        } else if (nonNullTeam && nonNullTitle && nonNullDayOfWeek) {
+            schedules = scheduleRepository.findAllByTeamAndTitleAndDayOfWeek(team, title, dayOfWeek, pageable);
+        } else if (nonNullTeam && nonNullTeacher && nonNullTitle) {
+            schedules = scheduleRepository.findAllByTeamAndTeacherAndTitle(team, teacher, title, pageable);
+        } else if (nonNullTitle && nonNullTeacher && nonNullDayOfWeek) {
+            schedules = scheduleRepository.findAllByTitleAndTeacherAndDayOfWeek(title, teacher, dayOfWeek, pageable);
+        } else if (nonNullTeam && nonNullTeacher && nonNullDayOfWeek) {
+            schedules = scheduleRepository.findAllByTeamAndTeacherAndDayOfWeek(team, teacher, dayOfWeek, pageable);
+        } else if (nonNullTitle && nonNullDayOfWeek) {
+            schedules = scheduleRepository.findAllByDayOfWeekAndTitle(dayOfWeek, title, pageable);
+        } else if (nonNullTitle && nonNullTeacher) {
+            schedules = scheduleRepository.findAllByTeacherAndTitle(teacher, title, pageable);
+        } else if (nonNullTitle && nonNullTeam) {
+            schedules = scheduleRepository.findAllByTeamAndTitle(team, title, pageable);
+        } else if (nonNullTeam && nonNullDayOfWeek) {
+            schedules = scheduleRepository.findAllByTeamAndDayOfWeek(team, dayOfWeek, pageable);
+        } else if (nonNullDayOfWeek && nonNullTeacher) {
+            schedules = scheduleRepository.findAllByDayOfWeekAndTeacher(dayOfWeek, teacher, pageable);
+        } else if (nonNullTeam && nonNullTeacher) {
+            schedules = scheduleRepository.findAllByTeamAndTeacher(team, teacher, pageable);
+        } else if (nonNullDayOfWeek) {
             schedules = scheduleRepository.findAllByDayOfWeek(dayOfWeek, pageable);
-        }
-        else if (nonNull(teacher)&&!teacher.isEmpty()){
+        } else if (nonNullTeacher) {
             schedules = scheduleRepository.findAllByTeacher(teacher, pageable);
-        }
-        else if (nonNull(team)&&!team.isEmpty()) {
+        } else if (nonNullTeam) {
             schedules = scheduleRepository.findByTeam(team, pageable);
+        } else if (nonNullTitle) {
+            schedules = scheduleRepository.findAllByTitle(title, pageable);
         } else {
             schedules = scheduleRepository.findAll(pageable);
         }

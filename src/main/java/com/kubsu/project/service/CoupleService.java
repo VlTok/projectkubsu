@@ -17,12 +17,17 @@ public class CoupleService {
         this.coupleRepository = coupleRepository;
     }
 
-    public void addCouple(Couple couple){
+    public void addCouple(Couple couple) {
         coupleRepository.save(couple);
     }
 
-    public Set<String> findAllTeachers(){
+    public Set<String> findAllTeachers() {
         List<String> teachers = coupleRepository.findAllTeachers();
         return new HashSet<>(teachers);
+    }
+
+    public Set<String> findAllTitles() {
+        List<String> groups = coupleRepository.findAllTitles();
+        return new HashSet<>(groups);
     }
 }

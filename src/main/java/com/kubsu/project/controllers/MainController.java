@@ -16,10 +16,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 
@@ -43,22 +47,27 @@ public class MainController {
     }
 
     @GetMapping("/main")
-    public String mainTable(@RequestParam(name = "team", value = "team",required = false) String team,
-                            @RequestParam(name = "teacher", value = "teacher",required = false) String teacher,
-                            @RequestParam(name = "dayOfWeek", value = "dayOfWeek",required = false) String dayOfWeek,
+    public String mainTable(@RequestParam(name = "team", value = "team", required = false) String team,
+                            @RequestParam(name = "teacher", value = "teacher", required = false) String teacher,
+                            @RequestParam(name = "dayOfWeek", value = "dayOfWeek", required = false) String dayOfWeek,
+                            @RequestParam(name = "title", value = "title", required = false) String title,
                             @PageableDefault(sort = {"id"}, direction = Sort.Direction.ASC) Pageable pageable,
                             Model model) {
 
-        Page<Schedule> page = scheduleService.findAll(nonNull(team)? team.trim() : null,
-                nonNull(teacher)? teacher.trim() : null,
-                nonNull(dayOfWeek) ? dayOfWeek.trim() : null, pageable);
+
+        Page<Schedule> page = scheduleService.findAll(nonNull(team) ? team.trim() : null,
+                nonNull(teacher) ? teacher.trim() : null,
+                nonNull(dayOfWeek) ? dayOfWeek.trim() : null,
+                nonNull(title) ? title.trim() : null, pageable);
         Set<String> teams = scheduleService.findAllTeam();
         Set<String> teachers = coupleService.findAllTeachers();
+        Set<String> titles = coupleService.findAllTitles();
         model.addAttribute("page", page);
         model.addAttribute("pagination", Pagination.computePagination(page));
         model.addAttribute("url", "/main");
         model.addAttribute("teams", teams);
         model.addAttribute("teachers", teachers);
+        model.addAttribute("titles", titles);
         model.addAttribute("team", team);
         model.addAttribute("teacher", teacher);
         model.addAttribute("dayOfWeek", dayOfWeek);

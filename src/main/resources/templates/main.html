@@ -17,9 +17,9 @@
             </form>
         </div>
         <div class="form-row">
-            <div class="form-group col-md-12 col-lg-10">
+            <div class="form-group col-md-12 col-lg-12">
                 <form method="get" th:action="@{/main}" class="form-inline">
-                    <label class="mr-2">
+                    <label class="mr-1 mt-2">
                         <select name="team" id="team" class="form-control">
                             <option selected disabled>Выберите группу</option>
                             <label th:each="el : ${teams}">
@@ -27,7 +27,7 @@
                             </label>
                         </select>
                     </label>
-                    <label class="mr-2">
+                    <label class="mr-1 mt-2">
                         <select name="teacher" id="teacher" class="form-control">
                             <option selected disabled>Выберите преподавателя</option>
                             <label th:each="el : ${teachers}">
@@ -35,7 +35,7 @@
                             </label>
                         </select>
                     </label>
-                    <label class="mr-2">
+                    <label class="mr-1 mt-2">
                         <select name="dayOfWeek" id="dayOfWeek" class="form-control">
                             <option selected disabled>Выберите день недели</option>
                             <label>
@@ -48,7 +48,15 @@
                             </label>
                         </select>
                     </label>
-                    <button type="submit" class="btn btn-dark form-control">Поиск</button>
+                    <label class="mr-1 mt-2">
+                        <select name="title" id="title" class="form-control">
+                            <option selected disabled>Выберите наименование пары</option>
+                            <label th:each="el : ${titles}">
+                                <option th:value="${el}" th:text="${el}"></option>
+                            </label>
+                        </select>
+                    </label>
+                    <button type="submit" class="btn btn-dark form-control mt-2">Поиск</button>
                 </form>
             </div>
         </div>
