@@ -6,7 +6,7 @@
 <header th:insert="blocks/header :: header"></header>
 <div class="container">
     <div class="mb-4 ml-3">
-        <h2 th:text="'Изменение профиля пользователя для '+${usernamePresent}"></h2>
+        <h2 th:text="'Профиль пользователя «'+${usernamePresent}+'»'"></h2>
         <div class="alert alert-danger" th:if="${not #lists.isEmpty(passwordError)}">
             <b th:text="${passwordError}"></b>
         </div>

@@ -107,7 +107,7 @@ public class UserService implements UserDetailsService {
         if(!StringUtils.isEmpty(user.getEmail())){
             String message = String.format(
                     "Привет, %s!\n"
-                            +"Приветствую тебя в веб-приложении <<Расписание Кубанского государственного университета>>. Пожалуйста, для потдверждения своей почты перейдите по ссылке: http://%s/activate/%s",
+                            + "Приветствую тебя в веб-приложении «Расписание Кубанского государственного университета». Пожалуйста, для потдверждения своей почты перейдите по ссылке: http://%s/activate/%s",
                     user.getUsername(),
                     hostname,
                     user.getActivationCode()

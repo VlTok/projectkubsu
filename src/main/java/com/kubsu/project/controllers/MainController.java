@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 
+import static com.kubsu.project.utils.UrlUtil.createRightUrl;
 import static java.util.Objects.nonNull;
 
 @Controller
@@ -62,9 +63,11 @@ public class MainController {
         Set<String> teams = scheduleService.findAllTeam();
         Set<String> teachers = coupleService.findAllTeachers();
         Set<String> titles = coupleService.findAllTitles();
+        String paramsUrl = createRightUrl(team, teacher, dayOfWeek, title);
         model.addAttribute("page", page);
         model.addAttribute("pagination", Pagination.computePagination(page));
         model.addAttribute("url", "/main");
+        model.addAttribute("urlParam", paramsUrl);
         model.addAttribute("teams", teams);
         model.addAttribute("teachers", teachers);
         model.addAttribute("titles", titles);
