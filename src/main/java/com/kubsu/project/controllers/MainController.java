@@ -39,6 +39,9 @@ public class MainController {
     @Value("${errors.path}")
     private String errorsPath;
 
+    @Value("${warnings.path}")
+    private String warningsPath;
+
     private final ScheduleService scheduleService;
     private final CoupleService coupleService;
 
@@ -136,40 +139,53 @@ public class MainController {
         if (!file.isEmpty() && !Objects.requireNonNull(file.getOriginalFilename()).isEmpty()) {
             File uploadDir = new File(uploadPath);
             File errorsDir = new File(errorsPath);
+            File warningDir = new File(warningsPath);
             if (!uploadDir.exists()) {
                 uploadDir.mkdir();
             }
-            if (!errorsDir.exists()){
+            if (!errorsDir.exists()) {
                 errorsDir.mkdir();
+            }
+            if (!warningDir.exists()) {
+                warningDir.mkdir();
             }
 
             String uuidFile = UUID.randomUUID().toString();
             String resultUploadFilename = uuidFile + "_" + file.getOriginalFilename();
-            String resultErrorFilename = uuidFile +"_error_file.txt";
+            String resultErrorFilename = uuidFile + "_error_file.txt";
+            String resultWarningFilename = uuidFile + "_warning_file.txt";
             String uploadFilePathname = uploadPath + "/" + resultUploadFilename;
             String fileWithErrorsInfoPathname = errorsPath + "/" + resultErrorFilename;
+            String fileWithWarningsInfoPathname = warningsPath + "/" + resultWarningFilename;
 
             file.transferTo(new File(uploadFilePathname));
             List<Schedule> scheduleListFromDb = scheduleService.findAllByAuthor(user);
             List<Schedule> scheduleListForAddIntoDb = new ArrayList<>();
-            Set<String> someErrors= ExcelWorker.readExcelFile(scheduleListFromDb, scheduleListForAddIntoDb,user, uploadFilePathname, fileWithErrorsInfoPathname);
-            if (someErrors.size()==0){
-                for (Schedule schedule: scheduleListForAddIntoDb) {
+            Set<String> someWarnings = new HashSet<>();
+            Set<String> someErrors = ExcelWorker.readExcelFile(scheduleListFromDb, scheduleListForAddIntoDb, user, uploadFilePathname, fileWithErrorsInfoPathname, fileWithWarningsInfoPathname, someWarnings);
+            if (someErrors.size() == 0) {
+                for (Schedule schedule : scheduleListForAddIntoDb) {
                     schedule.setFilenameWithErrors(resultErrorFilename);
                     schedule.setFilenameWithExcel(resultUploadFilename);
                     Schedule saveSchedule = scheduleService.addSchedule(schedule);
-                    for (Couple couple: schedule.getCouples()){
+                    for (Couple couple : schedule.getCouples()) {
                         couple.setSchedule(saveSchedule);
                         coupleService.addCouple(couple);
                     }
                 }
-                model.addAttribute("messageType","success");
-                model.addAttribute("message","Расписание успешно добавлено!");
-            }else {
-                model.addAttribute("messageType","danger");
-                model.addAttribute("message","Были найдены ошибки!");
+                model.addAttribute("messageType", "success");
+                model.addAttribute("message", "Расписание успешно добавлено!");
+            } else {
+                model.addAttribute("messageType", "danger");
+                model.addAttribute("message", "Были найдены ошибки!");
                 model.addAttribute("resultUploadFilename", resultUploadFilename);
                 model.addAttribute("resultErrorFilename", resultErrorFilename);
+            }
+            if (!someWarnings.isEmpty()) {
+                model.addAttribute("messageWarning", "warning");
+                model.addAttribute("messageWarningInfo", "Были найдены места на которые стоит обратить внимание!");
+                model.addAttribute("resultUploadFilename2", resultUploadFilename);
+                model.addAttribute("resultWarningFilename", resultWarningFilename);
             }
         }
 

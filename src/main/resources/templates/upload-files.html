@@ -16,6 +16,11 @@
                 <b th:text="${message}"></b>
             </div>
         </div>
+        <div th:if="${messageWarning}=='warning'">
+            <div th:class="'col-sm-6 alert alert-'+${messageWarning}">
+                <b th:text="${messageWarningInfo}"></b>
+            </div>
+        </div>
     </div>
     <h2 class="my-margin-bottom-2 col-sm-6">Загрузка расписания из файла </h2>
     <form th:action="@{/main/upload}" method="post" enctype="multipart/form-data">
@@ -31,10 +36,22 @@
     </form>
     <div th:if="${messageType}=='danger'" class="col-sm-6">
         <div>
-            <a th:download="${resultUploadFilename}" th:href="'/excel/'+${resultUploadFilename}">Выгрузить excel файл с ошибками</a>
+            <a th:download="${resultUploadFilename}" th:href="'/excel/'+${resultUploadFilename}">Выгрузить excel файл с
+                ошибками</a>
         </div>
         <div>
-            <a th:download="${resultErrorFilename}" th:href="'/file_with_errors_info/'+${resultErrorFilename}">Выгрузить txt файл с ошибками и дополнительной информацией</a>
+            <a th:download="${resultErrorFilename}" th:href="'/file_with_errors_info/'+${resultErrorFilename}">Выгрузить
+                txt файл с ошибками и дополнительной информацией</a>
+        </div>
+    </div>
+    <div th:if="${messageWarning}=='warning'" class="col-sm-6">
+        <div>
+            <a th:download="${resultUploadFilename2}" th:href="'/excel/'+${resultUploadFilename2}">Выгрузить excel файл
+                с предупреждениями</a>
+        </div>
+        <div>
+            <a th:download="${resultWarningFilename}" th:href="'/files_with_warnings_info/'+${resultWarningFilename}">Выгрузить
+                txt файл с предупреждениями и дополнительной информацией</a>
         </div>
     </div>
 </div>

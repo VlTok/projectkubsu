@@ -23,6 +23,9 @@ public class MvcConfig implements WebMvcConfigurer {
     @Value("${errors.path}")
     private String errorsPath;
 
+    @Value("${warnings.path}")
+    private String warningsPath;
+
     @Bean
     public RestTemplate getRestTemplate() {
         return new RestTemplate();
@@ -40,6 +43,8 @@ public class MvcConfig implements WebMvcConfigurer {
                 .addResourceLocations("file://" + uploadPath + "/");
         registry.addResourceHandler("/file_with_errors_info/**")
                 .addResourceLocations("file://" + errorsPath + "/");
+        registry.addResourceHandler("/files_with_warnings_info/**")
+                .addResourceLocations("file://" + warningsPath + "/");
     }
 
     @Override

@@ -14,7 +14,6 @@ import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -40,7 +39,7 @@ public class ExcelWorker {
     private static final CoupleDto coupleDto = new CoupleDto();
     private static final CellReferenceInfo cellReferenceInfo = new CellReferenceInfo();
 
-    public static Set<String> readExcelFile(List<Schedule> scheduleListFromDb, List<Schedule> scheduleListForAddIntoDb, User user, String uploadFilePathname, String fileWithErrorsInfoPathname) throws IOException, ParseException {
+    public static Set<String> readExcelFile(List<Schedule> scheduleListFromDb, List<Schedule> scheduleListForAddIntoDb, User user, String uploadFilePathname, String fileWithErrorsInfoPathname, String fileWithWarningsInfoPathname, Set<String> someWarnings) throws IOException, ParseException {
         File file = new File(uploadFilePathname);
 
         List<ScheduleDto> scheduleDtoListForAddIntoDb = new ArrayList<>();
@@ -99,7 +98,7 @@ public class ExcelWorker {
             workbook.close();
 
             if (findErrorsIntoExcel(cellReferenceInfoList, excelCoupleInfoMap, file, errorsInfoForFirstStep, sheetIterator)) {
-                writeErrorsIntoFile(errorsInfoForFirstStep, fileWithErrorsInfoPathname);
+                writeErrorsOrWarningsIntoFile(errorsInfoForFirstStep, fileWithErrorsInfoPathname);
                 return errorsInfoForFirstStep;
             }
             System.out.println("errorsInfoList: " + errorsInfoForFirstStep);
@@ -109,9 +108,12 @@ public class ExcelWorker {
                 addNewInformationIntoCouplesInfo(couplesInfoFromDb, scheduleListFromDb);
                 if (findErrorsIntoExcelWithDb(cellReferenceInfoList, excelCoupleInfoMap,
                         couplesInfoFromDb, file, errorsInfoForSecondStep, sheetIterator)) {
-                    writeErrorsIntoFile(errorsInfoForSecondStep, fileWithErrorsInfoPathname);
+                    writeErrorsOrWarningsIntoFile(errorsInfoForSecondStep, fileWithErrorsInfoPathname);
                     return errorsInfoForSecondStep;
                 }
+            }
+            if (findWarningsIntoExcel(cellReferenceInfoList, excelCoupleInfoMap, file, someWarnings, sheetIterator)) {
+                writeErrorsOrWarningsIntoFile(someWarnings, fileWithWarningsInfoPathname);
             }
             sheetIterator++;
         }
@@ -313,6 +315,49 @@ public class ExcelWorker {
         return haveErrors;
     }
 
+    private static boolean findWarningsIntoExcel(List<CellReferenceInfo> cellReferenceInfoList, Map<CellReferenceInfo, ExcelCoupleInfo> excelCoupleInfoMap, File file, Set<String> warningsInfo, int sheetIterator) throws IOException {
+        boolean haveWarnings = false;
+        FileInputStream inputStream = new FileInputStream(file);
+        ZipSecureFile.setMinInflateRatio(0);
+        XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+        XSSFSheet sheet = workbook.getSheetAt(sheetIterator);
+        for (int i = 0; i < cellReferenceInfoList.size(); i++) {
+            CellReferenceInfo referenceInfo1 = cellReferenceInfoList.get(i);
+            ExcelCoupleInfo excelCoupleInfo1 = excelCoupleInfoMap.get(referenceInfo1);
+            if (isPhysicalEducation(excelCoupleInfo1)) {
+                continue;
+            }
+            for (int j = i + 1; j < cellReferenceInfoList.size(); j++) {
+                CellReferenceInfo referenceInfo2 = cellReferenceInfoList.get(j);
+                ExcelCoupleInfo excelCoupleInfo2 = excelCoupleInfoMap.get(referenceInfo2);
+                if (isPhysicalEducation(excelCoupleInfo2)) {
+                    continue;
+                }
+                haveWarnings = checkWarningsIntoExcelCells(workbook, sheet, excelCoupleInfo1, referenceInfo1, excelCoupleInfo2, referenceInfo2, warningsInfo, haveWarnings);
+            }
+        }
+        try (OutputStream fileOut = new FileOutputStream(file)) {
+            workbook.write(fileOut);
+        }
+        workbook.close();
+        return haveWarnings;
+    }
+
+    private static boolean checkWarningsIntoExcelCells(XSSFWorkbook workbook, XSSFSheet sheet,
+                                                       ExcelCoupleInfo excelCoupleInfo1, CellReferenceInfo referenceInfo1,
+                                                       ExcelCoupleInfo excelCoupleInfo2, CellReferenceInfo referenceInfo2,
+                                                       Set<String> warningsInfo, boolean haveWarnings) {
+        CellStyle style = workbook.createCellStyle();
+        style.setFillBackgroundColor(IndexedColors.BLUE.getIndex());
+        style.setFillPattern(FillPatternType.LEAST_DOTS);
+        if (isHaveEqualsDayOfWeekAndTimeCoupleAndAudienceAndParityAndTeacherButOtherTitle(excelCoupleInfo1, excelCoupleInfo2)) {
+            setStyleForCellsWithWarning(sheet, style, referenceInfo1, warningsInfo);
+            setStyleForCellsWithWarning(sheet, style, referenceInfo2, warningsInfo);
+            return true;
+        }
+        return haveWarnings;
+    }
+
     private static void setStyleForCellsWithError(XSSFSheet sheet, CellStyle style, CellReferenceInfo referenceInfo, Set<String> errorsInfo) {
         getCellsWithError(sheet, style, referenceInfo.getCellTitleReference());
         getCellsWithError(sheet, style, referenceInfo.getCellTeacherReference());
@@ -326,13 +371,26 @@ public class ExcelWorker {
         errorsInfo.add(error);
     }
 
+    private static void setStyleForCellsWithWarning(XSSFSheet sheet, CellStyle style, CellReferenceInfo referenceInfo, Set<String> errorsInfo) {
+        getCellsWithError(sheet, style, referenceInfo.getCellTitleReference());
+        getCellsWithError(sheet, style, referenceInfo.getCellTeacherReference());
+        getCellsWithError(sheet, style, referenceInfo.getCellTypeReference());
+        getCellsWithError(sheet, style, referenceInfo.getCellAudienceReference());
+        String error = String.format("При выполнении первого этапа проверки в ячейках: %s %s %s %s обнаружена опасность в наименовании пар",
+                referenceInfo.getCellTitleReference().formatAsString(),
+                referenceInfo.getCellTeacherReference().formatAsString(),
+                referenceInfo.getCellTypeReference().formatAsString(),
+                referenceInfo.getCellAudienceReference().formatAsString());
+        errorsInfo.add(error);
+    }
+
     private static void getCellsWithError(XSSFSheet sheet, CellStyle style, CellReference cellReference) {
         Row row = sheet.getRow(cellReference.getRow());
         Cell cell = row.getCell(cellReference.getCol());
         cell.setCellStyle(style);
     }
 
-    private static void writeErrorsIntoFile(Set<String> errorsInfo, String fileWithErrorsInfoPathname) throws IOException {
+    private static void writeErrorsOrWarningsIntoFile(Set<String> errorsInfo, String fileWithErrorsInfoPathname) throws IOException {
         File fileWithErrorsInfo = new File(fileWithErrorsInfoPathname);
         FileWriter fos = new FileWriter(fileWithErrorsInfo);
         BufferedWriter bufferedWriter = new BufferedWriter(fos);
@@ -427,12 +485,18 @@ public class ExcelWorker {
                 coupleInfo.getTeam(),
                 coupleInfo.getDayOfWeek(),
                 coupleInfo.getParity()
-                );
+        );
         errorsInfo.add(error);
     }
 
-    private static boolean isSameGroup(ExcelCoupleInfo excelCoupleInfo1, ExcelCoupleInfo excelCoupleInfo2){
+    private static boolean isSameGroup(ExcelCoupleInfo excelCoupleInfo1, ExcelCoupleInfo excelCoupleInfo2) {
         return excelCoupleInfo1.getTeam().equals(excelCoupleInfo2.getTeam());
+    }
+
+    private static boolean isHaveEqualsDayOfWeekAndTimeCoupleAndAudienceAndParityAndTeacherButOtherTitle(ExcelCoupleInfo excelCoupleInfo1, ExcelCoupleInfo excelCoupleInfo2) {
+        return isHaveEqualsDayOfWeekAndTimeCoupleAndAudienceAndParity(excelCoupleInfo1, excelCoupleInfo2) &&
+                excelCoupleInfo1.getTeacher().equals(excelCoupleInfo2.getTeacher()) &&
+                !excelCoupleInfo1.getTitle().equals(excelCoupleInfo2.getTitle());
     }
 
     private static boolean isHaveEqualsDayOfWeekAndTimeCoupleAndAudienceAndParity(ExcelCoupleInfo excelCoupleInfo1, ExcelCoupleInfo excelCoupleInfo2) {
